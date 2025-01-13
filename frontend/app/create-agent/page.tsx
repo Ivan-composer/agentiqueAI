@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link2, Plus, ArrowLeft } from 'lucide-react'
-import Image from 'next/image'
+import { Plus, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import SocialItem from '@/components/social-item'
 import { Button } from '@/components/ui/button'
@@ -79,7 +78,7 @@ export default function CreateSpiritPage() {
             Connect accounts
           </h1>
           <h2 className="text-xl text-center text-gray-600 mb-8">
-            To train your <span className="text-[#0098EA]">AI-Spirit</span> on
+            To train your <span className="text-[#0098EA]">AI-Agent</span> on
           </h2>
 
           <div className="space-y-4 mb-8">

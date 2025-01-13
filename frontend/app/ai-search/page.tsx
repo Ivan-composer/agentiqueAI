@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BottomNav from '../bottom-nav'
+import BottomNav from '@/components/bottom-nav'
 
 export default function AISearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -20,7 +20,7 @@ export default function AISearchPage() {
       <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-8 -mt-20">
         <div className="text-center space-y-6">
           <div className="flex items-center justify-center gap-2">
-            <h1 className="text-[28px] font-bold bg-gradient-to-r from-[#08C6C9] to-[#0098EA] bg-clip-text text-transparent">
+            <h1 className="text-[28px] font-bold bg-gradient-to-r from-[#08C6C9] to-[#0098EA] bg-clip-text text-transparent font-[&apos;Inter&apos;]">
               AGENTIQUE
             </h1>
             <svg width="28" height="28" viewBox="0 0 45 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative top-[1px]">
@@ -35,7 +35,7 @@ export default function AISearchPage() {
               Consult from AI Creators
             </h2>
             <p className="text-[#1E293B] text-xl leading-7 max-w-[343px] mx-auto">
-              We'll pick the most relevant creators tailored to your needs
+              We&apos;ll pick the most relevant creators tailored to your needs
             </p>
           </div>
         </div>

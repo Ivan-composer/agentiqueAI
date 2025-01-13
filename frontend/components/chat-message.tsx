@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { Youtube, Linkedin, Twitter } from 'lucide-react'
 
 interface MessageProps {
   message: {
@@ -34,7 +33,7 @@ export default function ChatMessage({ message, creator }: MessageProps) {
         className="rounded-full self-end"
       />
       <div className="flex-1">
-        <div className="text-sm text-gray-500 mb-1">{creator.name} AI-spirit</div>
+        <div className="text-sm text-gray-500 mb-1">{creator.name} AI-agent</div>
         <div className="bg-[#EFF6FF] rounded-2xl rounded-tl-sm px-4 py-3">
           {message.content}
         </div>

@@ -1,5 +1,5 @@
-import QuestIcon from './quest-icon'
-import TokenIcon from './token-icon'
+import QuestIcon from '@/components/quest-icon'
+import TokenIcon from '@/components/token-icon'
 
 interface QuestItemProps {
   name: string
