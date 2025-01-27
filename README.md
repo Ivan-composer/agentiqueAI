@@ -8,24 +8,32 @@ Agentique is an AI-powered platform that allows users to interact with AI-twins 
 
 ## Project Structure
 ```
-agentiqueAI/
+.
+├── INSTRUCTIONS.md
 ├── README.md
-├── frontend/
+├── backend
+│   ├── README.md
+│   ├── app
+│   ├── main.py
+│   ├── pyproject.toml
+│   └── requirements.txt
+├── folder-structure.txt
+├── frontend
+│   ├── README.md
+│   ├── app
+│   ├── components
+│   ├── components.json
+│   ├── hooks
+│   ├── lib
+│   ├── next-env.d.ts
+│   ├── next.config.mjs
 │   ├── package.json
-│   ├── tailwind.config.js
-│   ├── next.config.js
-│   └── src/
-│       ├── pages/
-│       ├── components/
-│       └── styles/
-└── backend/
-    ├── requirements.txt
-    ├── main.py
-    └── app/
-        ├── __init__.py
-        ├── routes/
-        ├── services/
-        └── utils/
+│   ├── postcss.config.mjs
+│   ├── public
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+├── requirements.txt
+└── uv.lock
 ```
 
 ## Getting Started
