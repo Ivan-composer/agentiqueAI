@@ -8,7 +8,11 @@ It provides a clean interface for generating embeddings and performing vector si
 import os
 from typing import List, Dict, Any, Optional
 import openai
-import pinecone
+from pinecone import Pinecone, ServerlessSpec
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class AIService:
     """
@@ -27,7 +31,7 @@ class AIService:
         """
         self.openai_api_key = os.environ.get("OPENAI_API_KEY")
         self.pinecone_api_key = os.environ.get("PINECONE_API_KEY")
-        self.pinecone_environment = os.environ.get("PINECONE_ENVIRONMENT", "us-west1-gcp")
+        self.pinecone_env = os.environ.get("PINECONE_ENV")
         
         if not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
@@ -36,11 +40,27 @@ class AIService:
             
         # Initialize APIs
         openai.api_key = self.openai_api_key
-        pinecone.init(api_key=self.pinecone_api_key, environment=self.pinecone_environment)
         
-        # Initialize Pinecone index
+        # Initialize Pinecone
+        self.pc = Pinecone(api_key=self.pinecone_api_key)
+
+        # Initialize configuration
         self.index_name = "agentique-index"
-        self.index = pinecone.Index(self.index_name)
+
+        # Create index if it doesn't exist
+        if self.index_name not in self.pc.list_indexes().names():
+            self.pc.create_index(
+                name=self.index_name,
+                dimension=384,  # all-MiniLM-L6-v2 embedding dimension
+                metric="cosine",
+                spec=ServerlessSpec(
+                    cloud="aws",
+                    region="us-east-1"  # Correct AWS region format
+                )
+            )
+
+        # Initialize Pinecone index
+        self.index = self.pc.Index(self.index_name)
     
     def generate_embedding(self, text: str) -> List[float]:
         """
