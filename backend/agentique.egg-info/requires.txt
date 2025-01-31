@@ -1,0 +1,6 @@
+telethon
+python-dotenv
+fastapi
+uvicorn[standard]
+pinecone-client
+openai>=1.0.0

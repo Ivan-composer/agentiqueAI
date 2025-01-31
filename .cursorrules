@@ -1,12 +1,18 @@
-# Project Overview
-Agentique is an AI-powered platform allowing users to interact with "AI-twins" of content creators for personalized consultations. The project is structured as a monorepo with two main directories:
+# `.cursorrules` for Agentique
 
-- frontend/ – A Next.js application (using Tailwind CSS).
-- backend/ – A FastAPI-based Python application.
+## **Project Overview**
 
-We use GitHub for version control and Cursor as our local AI-powered coding assistant to help with generating, refactoring, and documenting code.
+Agentique is an AI-powered platform allowing users to interact with “AI-twins” of content creators for personalized consultations. The project is structured as a **monorepo** with two main directories:
 
-## Monorepo Structure
+- **frontend/** – A Next.js application (using Tailwind CSS).  
+- **backend/** – A FastAPI-based Python application.
+
+We use **GitHub** for version control and **Cursor** as our local AI-powered coding assistant to help with generating, refactoring, and documenting code.
+
+---
+
+## **Monorepo Structure**
+
 ```
 .
 ├── INSTRUCTIONS.md
@@ -36,38 +42,53 @@ We use GitHub for version control and Cursor as our local AI-powered coding assi
 └── uv.lock
 ```
 
-## Frontend Details
-Framework: Next.js (React)
-Styling: Tailwind CSS
+---
 
-Typical Scripts:
-- `npm install` to install dependencies
-- `npm run dev` to start the development server
+## **Frontend Details**
+
+- **Framework**: Next.js (React)  
+- **Styling**: Tailwind CSS  
+
+### Typical Scripts
+
+- `npm install` to install dependencies  
+- `npm run dev` to start the development server  
 - `npm run build` for production build
 
-## Backend Details
-Framework: FastAPI (Python)
+---
 
-Key Dependencies:
-- fastapi, uvicorn for the server
-- openai (>=1.0.0) for embeddings generation
-- pinecone-client (>=2.2.4) for vector similarity search
-- python-dotenv (>=1.0.0) for environment variable management
-- pydantic (>=2.4.2) for data validation
-- black (>=23.11.0) for code formatting
+## **Backend Details**
 
-Typical Scripts:
-- `pip install -r requirements.txt` to install dependencies
-- `uvicorn main:app --reload` to start the FastAPI server
+- **Framework**: FastAPI (Python)
 
-## AI Service Implementation
+### Key Dependencies
+
+- `fastapi, uvicorn` for the server  
+- `openai (>=1.0.0)` for embeddings generation  
+- `pinecone-client (>=2.2.4)` for vector similarity search  
+- `python-dotenv (>=1.0.0)` for environment variable management  
+- `pydantic (>=2.4.2)` for data validation  
+- `black (>=23.11.0)` for code formatting
+
+### Typical Scripts
+
+- `pip install -r requirements.txt` to install dependencies  
+- `uvicorn main:app --reload` to start the FastAPI server  
+
+---
+
+## **AI Service Implementation**
+
 The project includes a centralized AI service (`backend/app/services/ai_service.py`) that handles:
-- OpenAI embeddings generation
-- Pinecone vector similarity search
-- Vector upserting and deletion
-- Proper error handling and logging
+
+- **OpenAI** embeddings generation  
+- **Pinecone** vector similarity search  
+- Vector upserting and deletion  
+- **Proper error handling and logging**  
+  - For more advanced logging setup (like writing logs to files so that Cursor can see them independently of the server console), see **`logging-solution.md`**.  
 
 Example AI Service Usage:
+
 ```python
 from app.services.ai_service import AIService
 
@@ -81,22 +102,42 @@ embedding = ai_service.generate_embedding("Your text here")
 results = ai_service.query_pinecone(embedding)
 ```
 
-## Coding Standards
+### **Single RAG Function (Unify Chat & Search)**
+
+- If we plan **both** a single-agent chat (filter by `agent_id`) and a global search (no filter), we can unify them via **one** function, e.g.:
+
+  ```python
+  def rag_retrieve_and_summarize(query: str, agent_id: Optional[str] = None) -> str:
+      """
+      Perform RAG: embed the query, retrieve from Pinecone,
+      optionally filter by agent_id, then build final context and call OpenAI.
+      """
+      ...
+  ```
+- This keeps the logic minimal and consistent across chat vs. search endpoints.
+
+---
+
+## **Coding Standards**
 
 ### General
-- Keep code modular and well-structured.
-- Write descriptive commit messages (what was changed and why).
+
+- **Fewer lines of core logic** is ideal, but **thorough docstrings** and **comments** are strongly encouraged. Comments **do not** count against line constraints.  
+- Keep code modular and well-structured.  
+- Write descriptive commit messages (what was changed and why).  
 - Use docstrings/comments for complex logic or unclear code sections.
 
 ### Frontend (Next.js & Tailwind)
-- Component Naming: Use PascalCase for React components.
-- Functional Components: Prefer functional components over class components.
-- Tailwind Usage:
+
+- **Component Naming**: Use PascalCase for React components.  
+- **Functional Components**: Prefer functional components.  
+- **Tailwind Usage**:
   - Keep styling inline using Tailwind classes (`className="bg-blue-500 text-white p-4"`).
-  - Avoid mixing external CSS files for basic styling if possible.
-- Commenting: Use JSDoc-style comments for component documentation.
+  - Avoid mixing external CSS files for basic styling if possible.  
+- **Commenting**: Use JSDoc-style comments for component documentation.
 
 Example:
+
 ```jsx
 /**
  * A sample header component for the Agentique front-end.
@@ -111,11 +152,14 @@ export default Header;
 ```
 
 ### Backend (FastAPI & Python)
-- Naming: Use snake_case for functions, variables, and file names.
-- Type Hints: Add Python type hints wherever possible (`def my_function(param: str) -> int:`).
-- Docstrings: Provide docstrings for all functions and classes (Google or NumPy style is fine).
+
+- **Naming**: Use snake_case for functions, variables, and file names.  
+- **Type Hints**: Add Python type hints (`def my_function(param: str) -> int:`).  
+- **Docstrings**: Provide docstrings for all functions/classes.  
+- **Error Handling**: Minimal but direct `try/except` with short logging or raising `HTTPException` if something external fails (see `logging-solution.md` for advanced logging).
 
 Example:
+
 ```python
 def read_root() -> dict:
     """
@@ -127,15 +171,19 @@ def read_root() -> dict:
     return {"message": "Welcome to the Agentique backend!"}
 ```
 
-Project Organization:
-- routes/ for FastAPI endpoints
-- services/ for business logic or third-party integrations (e.g., AI calls)
-- utils/ for helper functions
+#### **Handling Large Telegram Channels / Partial Ingestion**
 
-## Linters & Formatters
+- If Telegram channels are huge, store an offset (`last_msg_id` or `last_date`) in the DB to ingest partial data in batches.  
+- This prevents timeouts or re-fetching old messages.
 
-### Frontend: Use Prettier for code formatting
-Example .prettierrc:
+---
+
+## **Linters & Formatters**
+
+### Frontend: Prettier
+
+Example `.prettierrc`:
+
 ```json
 {
   "semi": true,
@@ -144,84 +192,71 @@ Example .prettierrc:
 }
 ```
 
-### Backend: Use Black for code formatting
-Example pyproject.toml:
+### Backend: Black
+
+Example `pyproject.toml`:
+
 ```toml
 [tool.black]
 line-length = 88
 target-version = ['py38']
 ```
 
-## Development Workflow
+---
 
-### Local Development (Cursor + GitHub)
-1. Clone the project locally with --depth 1 to save disk space.
-2. Open the entire project folder in Cursor so it can assist with both frontend/ and backend/.
-3. Make changes (new features, bug fixes, documentation) with Cursor's guidance.
-4. Commit changes and push to GitHub.
+## **Development Workflow**
 
-### Testing & Iteration
-- Frontend: Access your Next.js dev server on localhost:3000.
-- Backend: Access your FastAPI endpoints at localhost:8000, with interactive docs at /docs.
+- We use a **single environment** for MVP. No separate dev/prod environment.  
+- Local Development (Cursor + GitHub):
+  1. Clone project.  
+  2. Open entire project folder in Cursor.  
+  3. Make changes with Cursor’s AI assistance.  
+  4. Commit & push to GitHub.
 
-## Environment Variables and Secrets
+- **Testing & Iteration**:  
+  - **Frontend** on localhost:3000  
+  - **Backend** on localhost:8000 with docs at /docs  
+  - Implement small test scripts or `pytest` to confirm /health endpoint, partial ingestion approach, etc.
 
-### Required Environment Variables for AI Service:
+---
+
+## **Environment Variables and Secrets**
+
+### Required for AI Service
+
 ```
 OPENAI_API_KEY=your_openai_api_key_here
 PINECONE_API_KEY=your_pinecone_api_key_here
 PINECONE_ENVIRONMENT=your_pinecone_environment  # e.g., us-west1-gcp
 ```
 
-### Accessing Environment Variables:
-Backend (Python):
+### Accessing Environment Variables
+
+**Backend** (Python):
 ```python
 import os
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ```
 
-Frontend (Next.js):
-- Use .env.local for local development
-- Access via process.env.NEXT_PUBLIC_API_URL or similar.
+**Frontend** (Next.js):
+- `.env.local` for local
+- Access via `process.env.NEXT_PUBLIC_API_URL` or similar
 
-## Helpful Commands & Scripts
+---
 
-### Frontend (from frontend/)
-```bash
-npm install         # Install dependencies
-npm run dev         # Start dev server
-npm run build      # Build for production
-npm run start      # Start the production server
-```
+## **Additional Tips**
 
-### Backend (from backend/)
-```bash
-pip install -r requirements.txt          # Install dependencies
-uvicorn main:app --reload               # Run in dev mode
-uvicorn main:app --host 0.0.0.0 --port 8000 # Custom host/port
-```
+1. **Minimal Code, Thorough Docstrings**  
+   - Keep final logic lines minimal but do not limit comment lines or docstring lines.  
+2. **Refer to Logging**  
+   - For advanced file-based logging (so logs are visible even if you’re not in the same terminal), see **`logging-solution.md`**.  
+3. **Partially Ingest Large Channels**  
+   - Maintain an offset if the channel is huge; avoid re-downloading everything on each run.  
+4. **Single RAG Function** for Chat vs. Search  
+   - Optionally unify retrieval logic into one function with an `agent_id` filter or none.  
+5. **Extend Error Handling** in AI Service  
+   - Catch external service errors (OpenAI, Pinecone) and log/raise them in minimal code fashion.
 
-### Git & GitHub
-Add & Commit:
-```bash
-git add .
-git commit -m "Descriptive commit message"
-```
+---
 
-Push to GitHub:
-```bash
-git push origin main
-```
-
-## Additional Tips
-- Consistent, Frequent Commits: Commit small, incremental changes often with clear messages.
-- Testing: Test each feature in local dev (Cursor environment).
-- Refactoring: Use Cursor's AI capabilities to refactor and optimize code regularly.
-- Documentation: Update these instructions and each folder's README as the project evolves.
-
-## Final Notes
-- Cursor: Always refer to this file for guidance on code style, folder structure, and best practices.
-- Renaming: We've renamed the project from Fantique to Agentique, so ensure references use Agentique.
-- Long-Term Goal: Build a maintainable, scalable AI-based platform for personalized content creator interactions.
-
-Thank you for contributing to Agentique! 
+**End of `.cursorrules`**.

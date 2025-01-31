@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: agentique
+Version: 0.1.0
+Requires-Dist: telethon
+Requires-Dist: python-dotenv
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: pinecone-client
+Requires-Dist: openai>=1.0.0
