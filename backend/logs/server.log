@@ -6741,3 +6741,61 @@ RuntimeError: Event loop is closed
 2025-01-31 14:33:27,186 [DEBUG] telethon.network.mtprotosender: Cancelling 0 pending message(s)...
 2025-01-31 14:33:27,189 [INFO] telethon.network.mtprotosender: Disconnection from 149.154.167.51:443/TcpFull complete!
 2025-01-31 14:33:27,189 [INFO] telethon.network.mtprotosender: Disconnection from 149.154.167.51:443/TcpFull complete!
+2025-01-31 16:01:55,548 [INFO] uvicorn.error: Shutting down
+2025-01-31 16:01:55,548 [INFO] uvicorn.error: Shutting down
+2025-01-31 16:01:55,550 [INFO] uvicorn.error: Shutting down
+2025-01-31 16:01:55,550 [INFO] uvicorn.error: Shutting down
+2025-01-31 16:01:55,655 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-01-31 16:01:55,655 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-01-31 16:01:55,655 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-01-31 16:01:55,655 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-01-31 16:01:55,660 [INFO] uvicorn.error: Application shutdown complete.
+2025-01-31 16:01:55,661 [INFO] uvicorn.error: Application shutdown complete.
+2025-01-31 16:01:55,660 [INFO] uvicorn.error: Application shutdown complete.
+2025-01-31 16:01:55,661 [INFO] uvicorn.error: Application shutdown complete.
+2025-01-31 16:01:55,666 [INFO] uvicorn.error: Finished server process [61626]
+2025-01-31 16:01:55,666 [INFO] uvicorn.error: Finished server process [61626]
+2025-01-31 16:01:55,667 [INFO] uvicorn.error: Finished server process [61625]
+2025-01-31 16:01:55,667 [INFO] uvicorn.error: Finished server process [61625]
+2025-01-31 16:02:01,119 [INFO] agentique: Initializing Supabase client with URL: https://fxstwwkesfacwevyzbho.supabase.co
+2025-01-31 16:02:01,119 [INFO] agentique: Initializing Supabase client with URL: https://fxstwwkesfacwevyzbho.supabase.co
+2025-01-31 16:02:01,137 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-01-31 16:02:01,137 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-01-31 16:02:01,140 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-01-31 16:02:01,140 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-01-31 16:02:01,904 [INFO] agentique: Initializing OpenAI client
+2025-01-31 16:02:01,905 [INFO] agentique: Initializing OpenAI client
+2025-01-31 16:02:01,906 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-01-31 16:02:01,907 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-01-31 16:02:01,907 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-01-31 16:02:01,907 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-01-31 16:02:02,108 [INFO] agentique: Initializing Pinecone client
+2025-01-31 16:02:02,108 [INFO] agentique: Initializing Pinecone client
+2025-01-31 16:02:02,109 [INFO] pinecone_plugin_interface.logging: Discovering subpackages in _NamespacePath(['/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/pinecone_plugins'])
+2025-01-31 16:02:02,109 [INFO] pinecone_plugin_interface.logging: Discovering subpackages in _NamespacePath(['/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/pinecone_plugins'])
+2025-01-31 16:02:02,111 [INFO] pinecone_plugin_interface.logging: Looking for plugins in pinecone_plugins.inference
+2025-01-31 16:02:02,110 [INFO] pinecone_plugin_interface.logging: Looking for plugins in pinecone_plugins.inference
+2025-01-31 16:02:02,175 [INFO] pinecone_plugin_interface.logging: Installing plugin inference into Pinecone
+2025-01-31 16:02:02,175 [INFO] pinecone_plugin_interface.logging: Installing plugin inference into Pinecone
+2025-01-31 16:02:03,066 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-01-31 16:02:03,066 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-01-31 16:02:03,068 [INFO] agentique: Using existing Pinecone index: agentique-index
+2025-01-31 16:02:03,383 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-01-31 16:02:03,383 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-01-31 16:02:03,455 [INFO] uvicorn.error: Started server process [63051]
+2025-01-31 16:02:03,455 [INFO] uvicorn.error: Started server process [63051]
+2025-01-31 16:02:03,455 [INFO] uvicorn.error: Waiting for application startup.
+2025-01-31 16:02:03,455 [INFO] uvicorn.error: Waiting for application startup.
+2025-01-31 16:02:03,456 [INFO] uvicorn.error: Application startup complete.
+2025-01-31 16:02:03,456 [INFO] uvicorn.error: Application startup complete.
+2025-01-31 16:02:05,224 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-01-31 16:02:05,224 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-01-31 16:02:05,226 [INFO] agentique: Using existing Pinecone index: agentique-index
+2025-01-31 16:02:05,437 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-01-31 16:02:05,437 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-01-31 16:02:05,490 [INFO] uvicorn.error: Started server process [63050]
+2025-01-31 16:02:05,490 [INFO] uvicorn.error: Started server process [63050]
+2025-01-31 16:02:05,491 [INFO] uvicorn.error: Waiting for application startup.
+2025-01-31 16:02:05,491 [INFO] uvicorn.error: Waiting for application startup.
+2025-01-31 16:02:05,492 [INFO] uvicorn.error: Application startup complete.
+2025-01-31 16:02:05,492 [INFO] uvicorn.error: Application startup complete.
