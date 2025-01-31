@@ -3,8 +3,9 @@ OpenAI service for embeddings and completions.
 """
 import os
 from typing import List, Dict, Any
-from openai import OpenAI
+from openai import OpenAI, APIError, RateLimitError
 from app.utils.logger import logger
+from app.utils.errors import ServiceUnavailableError
 
 # Initialize OpenAI client
 logger.info("Initializing OpenAI client")
@@ -19,6 +20,9 @@ async def generate_embedding(text: str) -> List[float]:
     
     Returns:
         List of floats representing the embedding vector
+        
+    Raises:
+        ServiceUnavailableError: If OpenAI service is unavailable
     """
     try:
         logger.debug("Generating embedding for text: %s...", text[:100])
@@ -28,9 +32,12 @@ async def generate_embedding(text: str) -> List[float]:
         )
         logger.info("Successfully generated embedding")
         return response.data[0].embedding
+    except (APIError, RateLimitError) as e:
+        logger.error("OpenAI service error: %s", str(e))
+        raise ServiceUnavailableError("OpenAI", {"error": str(e)})
     except Exception as e:
         logger.error("Failed to generate embedding: %s", str(e))
-        return []
+        raise ServiceUnavailableError("OpenAI", {"error": "Unknown error occurred"})
 
 async def generate_completion(messages: List[Dict[str, str]], temperature: float = 0.7, max_tokens: int = 500) -> str:
     """
@@ -43,6 +50,9 @@ async def generate_completion(messages: List[Dict[str, str]], temperature: float
     
     Returns:
         Generated text response
+        
+    Raises:
+        ServiceUnavailableError: If OpenAI service is unavailable
     """
     try:
         logger.debug("Generating completion with %d messages", len(messages))
@@ -54,9 +64,12 @@ async def generate_completion(messages: List[Dict[str, str]], temperature: float
         )
         logger.info("Successfully generated completion")
         return response.choices[0].message.content
+    except (APIError, RateLimitError) as e:
+        logger.error("OpenAI service error: %s", str(e))
+        raise ServiceUnavailableError("OpenAI", {"error": str(e)})
     except Exception as e:
         logger.error("Failed to generate completion: %s", str(e))
-        return ""
+        raise ServiceUnavailableError("OpenAI", {"error": "Unknown error occurred"})
 
 async def moderate_content(text: str) -> Dict[str, Any]:
     """
@@ -67,6 +80,9 @@ async def moderate_content(text: str) -> Dict[str, Any]:
     
     Returns:
         Dictionary containing moderation results
+        
+    Raises:
+        ServiceUnavailableError: If OpenAI service is unavailable
     """
     try:
         logger.debug("Moderating content: %s...", text[:100])
@@ -81,10 +97,9 @@ async def moderate_content(text: str) -> Dict[str, Any]:
             "categories": result.categories,
             "category_scores": result.category_scores
         }
+    except (APIError, RateLimitError) as e:
+        logger.error("OpenAI service error: %s", str(e))
+        raise ServiceUnavailableError("OpenAI", {"error": str(e)})
     except Exception as e:
         logger.error("Failed to moderate content: %s", str(e))
-        return {
-            "flagged": True,  # Fail safe: flag content if moderation fails
-            "categories": {},
-            "category_scores": {}
-        } 
+        raise ServiceUnavailableError("OpenAI", {"error": "Unknown error occurred"}) 

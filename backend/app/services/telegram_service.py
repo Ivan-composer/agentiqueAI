@@ -9,6 +9,7 @@ from telethon.tl.types import Message
 from datetime import datetime, timedelta
 import asyncio
 from app.utils.logger import logger
+from app.utils.errors import TelegramError
 
 # Device info to match MacBook Pro to avoid conflicts with personal sessions
 DEVICE_MODEL = "MacBook Pro"
@@ -24,6 +25,9 @@ class TelegramService:
         
         Args:
             session: Optional custom session name. If not provided, uses phone number.
+            
+        Raises:
+            TelegramError: If required credentials are missing
         """
         self.api_id = int(os.getenv("TELEGRAM_API_ID", "0"))
         self.api_hash = os.getenv("TELEGRAM_API_HASH", "")
@@ -31,7 +35,7 @@ class TelegramService:
         
         if not all([self.api_id, self.api_hash, self.phone]):
             logger.error("Missing Telegram credentials in environment variables")
-            raise ValueError("TELEGRAM_API_ID, TELEGRAM_API_HASH, and TELEGRAM_PHONE must be set")
+            raise TelegramError("initialization", {"error": "Missing required credentials"})
         
         # Use custom session name if provided, otherwise use phone number
         session_name = session if session else self.phone
@@ -55,16 +59,25 @@ class TelegramService:
         )
 
     async def connect(self) -> None:
-        """Connect to Telegram and ensure authorization."""
-        if not self.client.is_connected():
-            logger.info("Connecting to Telegram...")
-            await self.client.connect()
-            
-            if not await self.client.is_user_authorized():
-                logger.error("No valid session found. Please run telegram_auth.py first to create a session.")
-                raise ValueError("No valid session found. Please authenticate first using telegram_auth.py")
-            
-            logger.info("Successfully connected using existing session")
+        """
+        Connect to Telegram and ensure authorization.
+        
+        Raises:
+            TelegramError: If connection fails or no valid session exists
+        """
+        try:
+            if not self.client.is_connected():
+                logger.info("Connecting to Telegram...")
+                await self.client.connect()
+                
+                if not await self.client.is_user_authorized():
+                    logger.error("No valid session found. Please run telegram_auth.py first to create a session.")
+                    raise TelegramError("authentication", {"error": "No valid session found"})
+                
+                logger.info("Successfully connected using existing session")
+        except Exception as e:
+            logger.error("Failed to connect to Telegram: %s", str(e))
+            raise TelegramError("connection", {"error": str(e)})
 
     async def verify_code(self, code: str) -> bool:
         """
@@ -75,6 +88,9 @@ class TelegramService:
             
         Returns:
             bool: True if verification successful
+            
+        Raises:
+            TelegramError: If verification fails
         """
         try:
             logger.info("Verifying code for phone: %s", self.phone)
@@ -82,7 +98,7 @@ class TelegramService:
             return True
         except Exception as e:
             logger.error("Failed to verify code: %s", str(e))
-            return False
+            raise TelegramError("verification", {"error": str(e)})
 
     async def get_channel_messages(
         self,
@@ -102,6 +118,9 @@ class TelegramService:
             
         Returns:
             List of message dictionaries with text and metadata
+            
+        Raises:
+            TelegramError: If message retrieval fails
         """
         try:
             await self.connect()
@@ -154,13 +173,22 @@ class TelegramService:
             
         except Exception as e:
             logger.error("Failed to retrieve messages from %s: %s", channel_link, str(e))
-            return []
+            raise TelegramError("message_retrieval", {"error": str(e), "channel": channel_link})
 
     async def disconnect(self) -> None:
-        """Safely disconnect from Telegram."""
-        if self.client.is_connected():
-            logger.info("Disconnecting from Telegram")
-            await self.client.disconnect()
+        """
+        Safely disconnect from Telegram.
+        
+        Raises:
+            TelegramError: If disconnection fails
+        """
+        try:
+            if self.client.is_connected():
+                logger.info("Disconnecting from Telegram")
+                await self.client.disconnect()
+        except Exception as e:
+            logger.error("Failed to disconnect from Telegram: %s", str(e))
+            raise TelegramError("disconnection", {"error": str(e)})
 
     async def __aenter__(self):
         """Async context manager entry."""

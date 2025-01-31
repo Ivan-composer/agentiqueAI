@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 from pinecone import Pinecone, ServerlessSpec
 from uuid import UUID
 from app.utils.logger import logger
+from app.utils.errors import ServiceUnavailableError
 
 # Initialize Pinecone
 logger.info("Initializing Pinecone client")
@@ -43,6 +44,9 @@ async def upsert_vectors(vectors: List[List[float]], metadata: List[Dict[str, An
     
     Returns:
         bool: True if successful
+        
+    Raises:
+        ServiceUnavailableError: If Pinecone service is unavailable
     """
     try:
         logger.debug("Upserting %d vectors to Pinecone", len(vectors))
@@ -55,7 +59,7 @@ async def upsert_vectors(vectors: List[List[float]], metadata: List[Dict[str, An
         return True
     except Exception as e:
         logger.error("Error upserting vectors: %s", str(e))
-        return False
+        raise ServiceUnavailableError("Pinecone", {"error": str(e)})
 
 async def query_similar(
     query_vector: List[float],
@@ -74,6 +78,9 @@ async def query_similar(
     
     Returns:
         List of similar items with their metadata
+        
+    Raises:
+        ServiceUnavailableError: If Pinecone service is unavailable
     """
     try:
         # Prepare filter
@@ -105,7 +112,7 @@ async def query_similar(
         return formatted_results
     except Exception as e:
         logger.error("Error querying vectors: %s", str(e))
-        return []
+        raise ServiceUnavailableError("Pinecone", {"error": str(e)})
 
 async def delete_vectors(ids: List[str]) -> bool:
     """
@@ -116,6 +123,9 @@ async def delete_vectors(ids: List[str]) -> bool:
     
     Returns:
         bool: True if successful
+        
+    Raises:
+        ServiceUnavailableError: If Pinecone service is unavailable
     """
     try:
         logger.debug("Deleting %d vectors from Pinecone", len(ids))
@@ -124,4 +134,4 @@ async def delete_vectors(ids: List[str]) -> bool:
         return True
     except Exception as e:
         logger.error("Error deleting vectors: %s", str(e))
-        return False 
+        raise ServiceUnavailableError("Pinecone", {"error": str(e)}) 
