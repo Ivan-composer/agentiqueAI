@@ -1,0 +1,8 @@
+# This Procfile is optimized for high concurrency scenarios.
+# It uses gunicorn with multiple uvicorn workers to handle concurrent requests.
+# To use this configuration:
+# 1. Rename this file to 'Procfile'
+# 2. Deploy to Railway
+# Note: The number of workers (4) can be adjusted based on available resources.
+
+web: gunicorn app.main:app -k uvicorn.workers.UvicornWorker --workers 4 --bind 0.0.0.0:$PORT 

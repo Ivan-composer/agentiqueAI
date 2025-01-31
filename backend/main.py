@@ -3,7 +3,7 @@ Main FastAPI application file for the Agentique backend.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import agent, auth, chat, search
+from app.routes import agent, auth, chat, search, admin, credits
 
 app = FastAPI(
     title="Agentique API",
@@ -25,6 +25,8 @@ app.include_router(agent.router, prefix="/agent", tags=["Agents"])
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 app.include_router(search.router, prefix="/search", tags=["Search"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+app.include_router(credits.router)
 
 @app.get("/")
 async def root():
