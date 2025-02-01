@@ -1,44 +1,30 @@
+import React from 'react';
+import { ChatMessage as ChatMessageType } from '@/lib/api';
+import { cn } from '@/lib/utils';
 import Image from 'next/image'
 
-interface MessageProps {
-  message: {
-    content: string
-    role: 'user' | 'assistant'
-  }
-  creator: {
-    name: string
-    imageUrl: string
-  }
+interface ChatMessageProps extends ChatMessageType {
+  className?: string;
 }
 
-export default function ChatMessage({ message, creator }: MessageProps) {
-  if (message.role === 'user') {
-    return (
-      <div className="flex justify-end">
-        <div className="bg-[#F1F5F9] text-black rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
-          {message.content}
-        </div>
-        <div className="text-sm text-gray-500 self-end ml-2">You</div>
-      </div>
-    )
-  }
+const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, className }) => {
+  const isUser = role === 'user';
 
   return (
-    <div className="flex gap-2">
-      <Image
-        src={creator.imageUrl}
-        alt={creator.name}
-        width={32}
-        height={32}
-        className="rounded-full self-end"
-      />
-      <div className="flex-1">
-        <div className="text-sm text-gray-500 mb-1">{creator.name} AI-agent</div>
-        <div className="bg-[#EFF6FF] rounded-2xl rounded-tl-sm px-4 py-3">
-          {message.content}
-        </div>
+    <div className={cn(
+      'flex w-full',
+      isUser ? 'justify-end' : 'justify-start',
+      className
+    )}>
+      <div className={cn(
+        'max-w-[80%] rounded-2xl px-4 py-2',
+        isUser ? 'bg-[#0098EA] text-white' : 'bg-gray-100 text-gray-900'
+      )}>
+        <p className="text-sm whitespace-pre-wrap break-words">{content}</p>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default ChatMessage;
 

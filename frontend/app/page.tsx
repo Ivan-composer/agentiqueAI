@@ -1,7 +1,29 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { checkHealth } from '../lib/api';
 import SearchInput from '@/components/search-input'
 import BottomNav from '@/components/bottom-nav'
 
 export default function Home() {
+  const [health, setHealth] = useState<string>('Checking...');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHealth = async () => {
+      try {
+        const data = await checkHealth();
+        setHealth(data.status);
+        setError(null);
+      } catch (err: any) {
+        setHealth('Error');
+        setError(err.message);
+      }
+    };
+
+    fetchHealth();
+  }, []);
+
   return (
     <main className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white via-[#E5F7FF]/20 to-white px-4">
       <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-8 -mt-20">
@@ -29,6 +51,22 @@ export default function Home() {
         <SearchInput />
       </div>
       <BottomNav />
+      <div className="text-center p-8 bg-white rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold mb-4">Agentique AI</h1>
+        <div className="mb-4">
+          <p className="text-lg">
+            Backend Status: {' '}
+            <span className={`font-semibold ${health === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
+              {health}
+            </span>
+          </p>
+          {error && (
+            <p className="text-red-500 mt-2">
+              {error}
+            </p>
+          )}
+        </div>
+      </div>
     </main>
   )
 }
