@@ -978,3 +978,586 @@
 2025-02-01 12:23:51,342 [INFO] uvicorn.error: Waiting for application startup.
 2025-02-01 12:23:51,344 [INFO] uvicorn.error: Application startup complete.
 2025-02-01 12:23:51,344 [INFO] uvicorn.error: Application startup complete.
+2025-02-01 12:37:43,050 [DEBUG] agentique: Fetching agent with id: list
+2025-02-01 12:37:43,059 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-01 12:37:43,062 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-02-01 12:37:43,089 [DEBUG] httpcore.connection: connect_tcp.started host='fxstwwkesfacwevyzbho.supabase.co' port=443 local_address=None timeout=120 socket_options=None
+2025-02-01 12:37:43,161 [DEBUG] httpcore.connection: connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fecf7001dc0>
+2025-02-01 12:37:43,163 [DEBUG] httpcore.connection: start_tls.started ssl_context=<ssl.SSLContext object at 0x7fecf700c340> server_hostname='fxstwwkesfacwevyzbho.supabase.co' timeout=120
+2025-02-01 12:37:43,446 [DEBUG] httpcore.connection: start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fecf7001be0>
+2025-02-01 12:37:43,449 [DEBUG] httpcore.http2: send_connection_init.started request=<Request [b'GET']>
+2025-02-01 12:37:43,451 [DEBUG] httpcore.http2: send_connection_init.complete
+2025-02-01 12:37:43,451 [DEBUG] httpcore.http2: send_request_headers.started request=<Request [b'GET']> stream_id=1
+2025-02-01 12:37:43,457 [DEBUG] hpack.hpack: Adding (b':method', b'GET') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,465 [DEBUG] hpack.hpack: Encoding 2 with 7 bits
+2025-02-01 12:37:43,465 [DEBUG] hpack.hpack: Adding (b':authority', b'fxstwwkesfacwevyzbho.supabase.co') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,466 [DEBUG] hpack.hpack: Encoding 1 with 6 bits
+2025-02-01 12:37:43,467 [DEBUG] hpack.hpack: Encoding 24 with 7 bits
+2025-02-01 12:37:43,467 [DEBUG] hpack.hpack: Adding (b':scheme', b'https') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,467 [DEBUG] hpack.hpack: Encoding 7 with 7 bits
+2025-02-01 12:37:43,468 [DEBUG] hpack.hpack: Adding (b':path', b'/rest/v1/agents?select=%2A&id=eq.list') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,468 [DEBUG] hpack.hpack: Encoding 4 with 6 bits
+2025-02-01 12:37:43,469 [DEBUG] hpack.hpack: Encoding 27 with 7 bits
+2025-02-01 12:37:43,469 [DEBUG] hpack.hpack: Adding (b'accept', b'*/*') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,469 [DEBUG] hpack.hpack: Encoding 19 with 6 bits
+2025-02-01 12:37:43,469 [DEBUG] hpack.hpack: Encoding 3 with 7 bits
+2025-02-01 12:37:43,470 [DEBUG] hpack.hpack: Adding (b'accept-encoding', b'gzip, deflate') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,481 [DEBUG] hpack.hpack: Encoding 16 with 7 bits
+2025-02-01 12:37:43,481 [DEBUG] hpack.hpack: Adding (b'user-agent', b'python-httpx/0.27.2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,482 [DEBUG] hpack.hpack: Encoding 58 with 6 bits
+2025-02-01 12:37:43,482 [DEBUG] hpack.hpack: Encoding 14 with 7 bits
+2025-02-01 12:37:43,482 [DEBUG] hpack.hpack: Adding (b'x-client-info', b'supabase-py/2.6.0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,482 [DEBUG] hpack.hpack: Encoding 10 with 7 bits
+2025-02-01 12:37:43,483 [DEBUG] hpack.hpack: Encoding 12 with 7 bits
+2025-02-01 12:37:43,483 [DEBUG] hpack.hpack: Adding (b'apikey', b'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,484 [DEBUG] hpack.hpack: Encoding 5 with 7 bits
+2025-02-01 12:37:43,484 [DEBUG] hpack.hpack: Encoding 165 with 7 bits
+2025-02-01 12:37:43,484 [DEBUG] hpack.hpack: Adding (b'authorization', b'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:True, huffman:True
+2025-02-01 12:37:43,484 [DEBUG] hpack.hpack: Encoding 23 with 4 bits
+2025-02-01 12:37:43,484 [DEBUG] hpack.hpack: Encoding 170 with 7 bits
+2025-02-01 12:37:43,486 [DEBUG] hpack.hpack: Adding (b'accept-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,486 [DEBUG] hpack.hpack: Encoding 10 with 7 bits
+2025-02-01 12:37:43,487 [DEBUG] hpack.hpack: Encoding 5 with 7 bits
+2025-02-01 12:37:43,488 [DEBUG] hpack.hpack: Adding (b'content-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,489 [DEBUG] hpack.hpack: Encoding 11 with 7 bits
+2025-02-01 12:37:43,489 [DEBUG] hpack.hpack: Encoding 5 with 7 bits
+2025-02-01 12:37:43,499 [DEBUG] hpack.hpack: Adding (b'content-length', b'2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,500 [DEBUG] hpack.hpack: Encoding 28 with 6 bits
+2025-02-01 12:37:43,500 [DEBUG] hpack.hpack: Encoding 1 with 7 bits
+2025-02-01 12:37:43,500 [DEBUG] hpack.hpack: Adding (b'content-type', b'application/json') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:43,501 [DEBUG] hpack.hpack: Encoding 31 with 6 bits
+2025-02-01 12:37:43,501 [DEBUG] hpack.hpack: Encoding 11 with 7 bits
+2025-02-01 12:37:43,501 [DEBUG] hpack.hpack: Encoded header block to b"\x82A\x98\x97\xca\x13\xe3\xc7R\xa2Q\x93\xc1{\xfa\xf7\x1c\xe7]\x16\xd68\xc6\x82\xaeC\xff\x87D\x9bb\xc2\xa1,w\x0b\x03\x98\xb5%\x1f\xe2\x0bAH\x98\x15\x14?\x06\x92\x02\xf6^\x83!?S\x83\xf9c\xe7\x90z\x8e\xaf\xd2g=KN\x94\xd7\xe5\x80.'W\x17@\x8a\xf2\xb1(1jJ\xc6\xaaS\xff\x8cE\xb5\x8e1\xa0\xabW\xe9\x81.\xe2\xe0@\x85\x1df\xea__\xff&/\xac\xb3\xc7\x88\x86\xd4l\xb98{\xc8\x1d&\xc8\x8c\x95ml\x97\xb29\x93\xad\x7f\x9coe}r\xfa\xcbY\x19\xd0mF\xcb\xeeO\xcb\xb3\xf3\xa7\x0f\xbf\xdd\xd9\x11\x92\xac\xb4~\x9b#\x99)\xfdh\x8c\xedfA&\x82\x0b\xf6~l\xc9D\x95P\xe7:g\xef\x90\xde\x0cJ_G\xee\xec\x8ed\xa7\r\xb1\x89\xa3g\xbd\x96\xbe\x7f\x9b\r\xab\xa6\x06t{#z\xb7\xec\x16\x9e\x9dQ\x92\x9e-\x12\xf6G4t\x84:=\xf0gE\xfeb\xd5\xf8\x05\xea[\x8e\xead\xd7\xb9\xdeh\x88\xa6\x06\xda??G\x0e\xdf\xcf\xc0\xf8;8\xe7\xfd\xba\xd6\x80,m\xfd\xa4\x98\xc0\x1f\x08\xff+\xbaQ\xd8[\x14/\xac\xb3\xc7\x88\x86\xd4l\xb98{\xc8\x1d&\xc8\x8c\x95ml\x97\xb29\x93\xad\x7f\x9coe}r\xfa\xcbY\x19\xd0mF\xcb\xeeO\xcb\xb3\xf3\xa7\x0f\xbf\xdd\xd9\x11\x92\xac\xb4~\x9b#\x99)\xfdh\x8c\xedfA&\x82\x0b\xf6~l\xc9D\x95P\xe7:g\xef\x90\xde\x0cJ_G\xee\xec\x8ed\xa7\r\xb1\x89\xa3g\xbd\x96\xbe\x7f\x9b\r\xab\xa6\x06t{#z\xb7\xec\x16\x9e\x9dQ\x92\x9e-\x12\xf6G4t\x84:=\xf0gE\xfeb\xd5\xf8\x05\xea[\x8e\xead\xd7\xb9\xdeh\x88\xa6\x06\xda??G\x0e\xdf\xcf\xc0\xf8;8\xe7\xfd\xba\xd6\x80,m\xfd\xa4\x98\xc0@\x8a\x19\x08Z\xd2\xb5v\x1eSP_\x85\xae\xd8\xe81?@\x8b!\xeaIjJ\xd5\xd8yMA\x7f\x85\xae\xd8\xe81?\\\x81\x17_\x8b\x1du\xd0b\r&=LtA\xea"
+2025-02-01 12:37:43,502 [DEBUG] httpcore.http2: send_request_headers.complete
+2025-02-01 12:37:43,504 [DEBUG] httpcore.http2: send_request_body.started request=<Request [b'GET']> stream_id=1
+2025-02-01 12:37:43,507 [DEBUG] httpcore.http2: send_request_body.complete
+2025-02-01 12:37:43,508 [DEBUG] httpcore.http2: receive_response_headers.started request=<Request [b'GET']> stream_id=1
+2025-02-01 12:37:43,521 [DEBUG] httpcore.http2: receive_remote_settings.started
+2025-02-01 12:37:43,523 [DEBUG] httpcore.http2: receive_remote_settings.complete return_value=<RemoteSettingsChanged changed_settings:{ChangedSetting(setting=SettingCodes.MAX_CONCURRENT_STREAMS, original_value=None, new_value=100), ChangedSetting(setting=SettingCodes.INITIAL_WINDOW_SIZE, original_value=65535, new_value=65536), ChangedSetting(setting=SettingCodes.MAX_FRAME_SIZE, original_value=16384, new_value=16777215)}>
+2025-02-01 12:37:44,373 [DEBUG] hpack.hpack: Decoding b'?\xe1\x1f\x8ca\x96\xdc4\xfd(\x00\xa9\x84\xb1\xa8 \t\xb5\x00\xfd\xc6]\xb8\xd3Jb\xd1\xbf_\x96\x1du\xd0b\r&=LtA\xea\xfbP\x93\x8e\xc4\x150Z\x99V{@\x85$\xabX?_\x8f|\x11\x82W\n\xeb\xef\xc9#.\xb85\xb1\xe0\xcf@\x8a$\xab\x10d\x9c\xab!#M\xa8\x86\xbf\xcfL:2^Z\x83\x9b\xd9\xabx\x9a\xa4~V\x1c\xc5\x81\x90\xb6\xcb\x80\x00>\xd45D\xa2\xd9\x0b\xba\xd8\xef\x9e\x91\x9a\xa4\x7f{\x8b\x84\x84-i[\x05D<\x86\xaao@\x8dDkL4\x97\xc0\xfd-\xdc\xb6 \xc7\xab\x011@\x8aDkWa\xfa\x14\x89Z\xc2\xcb\x8f\x97\xca\x13\xe3\xc7R\xa2Q\x93\xc1{\xfa\xf7\x1c\xe7@\x90\xf2\xb1\x0fRKRVO\xaa\xca\xb1\xebI\x8fR?\x85\xa8\xe8\xa8\xd2\xcb@\x8f\xf2\xb1j\xee\x7fK\r)-5\xa5b\x1e\xda\x93\x011@\x95\xf2\xb1j\xee\x7fK[Z\x13aGJ\xc8-\x9d\xccB\xac\x93R_\x82\x10\x1av\x87%\x07\xb6Ih\x1d\x85@\x85\x1d\tY\x1d\xc9\x90\x9d\x98?\x9b\x8d4\xcf\xf3\xf6\xa5#\x81\xe7\x1a\x00?'
+2025-02-01 12:37:44,374 [DEBUG] hpack.hpack: Decoded 4096, consumed 3 bytes
+2025-02-01 12:37:44,374 [DEBUG] hpack.table: Resizing header table to 4096 from 4096
+2025-02-01 12:37:44,374 [DEBUG] hpack.hpack: Decoded 12, consumed 1 bytes
+2025-02-01 12:37:44,375 [DEBUG] hpack.hpack: Decoded (b':status', b'400'), consumed 1
+2025-02-01 12:37:44,375 [DEBUG] hpack.hpack: Decoded 33, consumed 1 bytes
+2025-02-01 12:37:44,377 [DEBUG] hpack.hpack: Decoded 22, consumed 1 bytes
+2025-02-01 12:37:44,379 [DEBUG] hpack.hpack: Decoded (b'date', b'Sat, 01 Feb 2025 09:37:44 GMT'), total consumed 24 bytes, indexed True
+2025-02-01 12:37:44,387 [DEBUG] hpack.hpack: Decoded 31, consumed 1 bytes
+2025-02-01 12:37:44,387 [DEBUG] hpack.hpack: Decoded 22, consumed 1 bytes
+2025-02-01 12:37:44,388 [DEBUG] hpack.hpack: Decoded (b'content-type', b'application/json; charset=utf-8'), total consumed 24 bytes, indexed True
+2025-02-01 12:37:44,388 [DEBUG] hpack.hpack: Decoded 5, consumed 1 bytes
+2025-02-01 12:37:44,388 [DEBUG] hpack.hpack: Decoded 15, consumed 1 bytes
+2025-02-01 12:37:44,389 [DEBUG] hpack.hpack: Decoded (b'cf-ray', b'90b0f6e799dd376a-HEL'), total consumed 23 bytes, indexed True
+2025-02-01 12:37:44,390 [DEBUG] hpack.hpack: Decoded 10, consumed 1 bytes
+2025-02-01 12:37:44,390 [DEBUG] hpack.hpack: Decoded 6, consumed 1 bytes
+2025-02-01 12:37:44,390 [DEBUG] hpack.hpack: Decoded (b'cf-cache-status', b'DYNAMIC'), total consumed 19 bytes, indexed True
+2025-02-01 12:37:44,390 [DEBUG] hpack.hpack: Decoded 26, consumed 1 bytes
+2025-02-01 12:37:44,390 [DEBUG] hpack.hpack: Decoded 3, consumed 1 bytes
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded (b'content-encoding', b'gzip'), total consumed 5 bytes, indexed True
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded 56, consumed 1 bytes
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded 26, consumed 1 bytes
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), total consumed 28 bytes, indexed True
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded 59, consumed 1 bytes
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded 11, consumed 1 bytes
+2025-02-01 12:37:44,391 [DEBUG] hpack.hpack: Decoded (b'vary', b'Accept-Encoding'), total consumed 13 bytes, indexed True
+2025-02-01 12:37:44,398 [DEBUG] hpack.hpack: Decoded 13, consumed 1 bytes
+2025-02-01 12:37:44,399 [DEBUG] hpack.hpack: Decoded 1, consumed 1 bytes
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded (b'sb-gateway-version', <memory at 0x7fecf6cf5dc0>), total consumed 17 bytes, indexed True
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded 10, consumed 1 bytes
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded 15, consumed 1 bytes
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), total consumed 28 bytes, indexed True
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded 16, consumed 1 bytes
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded 5, consumed 1 bytes
+2025-02-01 12:37:44,400 [DEBUG] hpack.hpack: Decoded (b'x-content-type-options', b'nosniff'), total consumed 24 bytes, indexed True
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded 15, consumed 1 bytes
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded 1, consumed 1 bytes
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded (b'x-envoy-attempt-count', <memory at 0x7fecf6cf5e80>), total consumed 19 bytes, indexed True
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded 21, consumed 1 bytes
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded 2, consumed 1 bytes
+2025-02-01 12:37:44,401 [DEBUG] hpack.hpack: Decoded (b'x-envoy-upstream-service-time', b'204'), total consumed 26 bytes, indexed True
+2025-02-01 12:37:44,402 [DEBUG] hpack.hpack: Decoded 54, consumed 1 bytes
+2025-02-01 12:37:44,402 [DEBUG] hpack.hpack: Decoded 7, consumed 1 bytes
+2025-02-01 12:37:44,402 [DEBUG] hpack.hpack: Decoded (b'server', b'cloudflare'), total consumed 9 bytes, indexed True
+2025-02-01 12:37:44,402 [DEBUG] hpack.hpack: Decoded 5, consumed 1 bytes
+2025-02-01 12:37:44,403 [DEBUG] hpack.hpack: Decoded 16, consumed 1 bytes
+2025-02-01 12:37:44,403 [DEBUG] hpack.hpack: Decoded (b'alt-svc', b'h3=":443"; ma=86400'), total consumed 24 bytes, indexed True
+2025-02-01 12:37:44,406 [DEBUG] httpcore.http2: receive_response_headers.complete return_value=(400, [(b'date', b'Sat, 01 Feb 2025 09:37:44 GMT'), (b'content-type', b'application/json; charset=utf-8'), (b'cf-ray', b'90b0f6e799dd376a-HEL'), (b'cf-cache-status', b'DYNAMIC'), (b'content-encoding', b'gzip'), (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), (b'vary', b'Accept-Encoding'), (b'sb-gateway-version', b'1'), (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), (b'x-content-type-options', b'nosniff'), (b'x-envoy-attempt-count', b'1'), (b'x-envoy-upstream-service-time', b'204'), (b'server', b'cloudflare'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2025-02-01 12:37:44,412 [INFO] httpx: HTTP Request: GET https://fxstwwkesfacwevyzbho.supabase.co/rest/v1/agents?select=%2A&id=eq.list "HTTP/2 400 Bad Request"
+2025-02-01 12:37:44,418 [DEBUG] httpcore.http2: receive_response_body.started request=<Request [b'GET']> stream_id=1
+2025-02-01 12:37:44,418 [DEBUG] httpcore.http2: receive_response_body.complete
+2025-02-01 12:37:44,419 [DEBUG] httpcore.http2: response_closed.started stream_id=1
+2025-02-01 12:37:44,419 [DEBUG] httpcore.http2: response_closed.complete
+2025-02-01 12:37:44,423 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 12:37:44,423 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 12:37:44,475 [DEBUG] agentique: Fetching agent with id: list
+2025-02-01 12:37:44,484 [DEBUG] httpcore.http2: send_request_headers.started request=<Request [b'GET']> stream_id=3
+2025-02-01 12:37:44,484 [DEBUG] hpack.hpack: Adding (b':method', b'GET') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Encoding 2 with 7 bits
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Adding (b':authority', b'fxstwwkesfacwevyzbho.supabase.co') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Encoding 71 with 7 bits
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Adding (b':scheme', b'https') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Encoding 7 with 7 bits
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Adding (b':path', b'/rest/v1/agents?select=%2A&id=eq.list') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Encoding 70 with 7 bits
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Adding (b'accept', b'*/*') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,485 [DEBUG] hpack.hpack: Encoding 69 with 7 bits
+2025-02-01 12:37:44,486 [DEBUG] hpack.hpack: Adding (b'accept-encoding', b'gzip, deflate') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,486 [DEBUG] hpack.hpack: Encoding 16 with 7 bits
+2025-02-01 12:37:44,487 [DEBUG] hpack.hpack: Adding (b'user-agent', b'python-httpx/0.27.2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,487 [DEBUG] hpack.hpack: Encoding 68 with 7 bits
+2025-02-01 12:37:44,487 [DEBUG] hpack.hpack: Adding (b'x-client-info', b'supabase-py/2.6.0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,487 [DEBUG] hpack.hpack: Encoding 67 with 7 bits
+2025-02-01 12:37:44,487 [DEBUG] hpack.hpack: Adding (b'apikey', b'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,488 [DEBUG] hpack.hpack: Encoding 66 with 7 bits
+2025-02-01 12:37:44,489 [DEBUG] hpack.hpack: Adding (b'authorization', b'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:True, huffman:True
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Encoding 23 with 4 bits
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Encoding 170 with 7 bits
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Adding (b'accept-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Encoding 65 with 7 bits
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Adding (b'content-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,490 [DEBUG] hpack.hpack: Encoding 64 with 7 bits
+2025-02-01 12:37:44,491 [DEBUG] hpack.hpack: Adding (b'content-length', b'2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,494 [DEBUG] hpack.hpack: Encoding 63 with 7 bits
+2025-02-01 12:37:44,494 [DEBUG] hpack.hpack: Adding (b'content-type', b'application/json') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,495 [DEBUG] hpack.hpack: Encoding 62 with 7 bits
+2025-02-01 12:37:44,498 [DEBUG] hpack.hpack: Encoded header block to b'\x82\xc7\x87\xc6\xc5\x90\xc4\xc3\xc2\x1f\x08\xff+\xbaQ\xd8[\x14/\xac\xb3\xc7\x88\x86\xd4l\xb98{\xc8\x1d&\xc8\x8c\x95ml\x97\xb29\x93\xad\x7f\x9coe}r\xfa\xcbY\x19\xd0mF\xcb\xeeO\xcb\xb3\xf3\xa7\x0f\xbf\xdd\xd9\x11\x92\xac\xb4~\x9b#\x99)\xfdh\x8c\xedfA&\x82\x0b\xf6~l\xc9D\x95P\xe7:g\xef\x90\xde\x0cJ_G\xee\xec\x8ed\xa7\r\xb1\x89\xa3g\xbd\x96\xbe\x7f\x9b\r\xab\xa6\x06t{#z\xb7\xec\x16\x9e\x9dQ\x92\x9e-\x12\xf6G4t\x84:=\xf0gE\xfeb\xd5\xf8\x05\xea[\x8e\xead\xd7\xb9\xdeh\x88\xa6\x06\xda??G\x0e\xdf\xcf\xc0\xf8;8\xe7\xfd\xba\xd6\x80,m\xfd\xa4\x98\xc0\xc1\xc0\xbf\xbe'
+2025-02-01 12:37:44,505 [DEBUG] httpcore.http2: send_request_headers.complete
+2025-02-01 12:37:44,505 [DEBUG] httpcore.http2: send_request_body.started request=<Request [b'GET']> stream_id=3
+2025-02-01 12:37:44,506 [DEBUG] httpcore.http2: send_request_body.complete
+2025-02-01 12:37:44,507 [DEBUG] httpcore.http2: receive_response_headers.started request=<Request [b'GET']> stream_id=3
+2025-02-01 12:37:44,714 [DEBUG] hpack.hpack: Decoding b'\x8c\xcb\xca\x7f\n\x8f|\x11\x82W\x0b$\x85\x95\xa6]pkc\xc1\x9f\xc9\xc8\xc7\xc6\xc5\xc4\xc3\xc2\x7f\x02\x0212\xc1\xc0'
+2025-02-01 12:37:44,715 [DEBUG] hpack.hpack: Decoded 12, consumed 1 bytes
+2025-02-01 12:37:44,716 [DEBUG] hpack.hpack: Decoded (b':status', b'400'), consumed 1
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded 75, consumed 1 bytes
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded (b'date', b'Sat, 01 Feb 2025 09:37:44 GMT'), consumed 1
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded 74, consumed 1 bytes
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded (b'content-type', b'application/json; charset=utf-8'), consumed 1
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded 73, consumed 2 bytes
+2025-02-01 12:37:44,717 [DEBUG] hpack.hpack: Decoded 15, consumed 1 bytes
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded (b'cf-ray', b'90b0f6eddef4376a-HEL'), total consumed 18 bytes, indexed True
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded 73, consumed 1 bytes
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded (b'cf-cache-status', b'DYNAMIC'), consumed 1
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded 72, consumed 1 bytes
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded (b'content-encoding', b'gzip'), consumed 1
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded 71, consumed 1 bytes
+2025-02-01 12:37:44,718 [DEBUG] hpack.hpack: Decoded (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), consumed 1
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded 70, consumed 1 bytes
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded (b'vary', b'Accept-Encoding'), consumed 1
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded 69, consumed 1 bytes
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded (b'sb-gateway-version', <memory at 0x7fecf6cf5dc0>), consumed 1
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded 68, consumed 1 bytes
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), consumed 1
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded 67, consumed 1 bytes
+2025-02-01 12:37:44,719 [DEBUG] hpack.hpack: Decoded (b'x-content-type-options', b'nosniff'), consumed 1
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded 66, consumed 1 bytes
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded (b'x-envoy-attempt-count', <memory at 0x7fecf6cf5e80>), consumed 1
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded 65, consumed 2 bytes
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded 2, consumed 1 bytes
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded (b'x-envoy-upstream-service-time', <memory at 0x7fecf7213e80>), total consumed 5 bytes, indexed True
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded 65, consumed 1 bytes
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded (b'server', b'cloudflare'), consumed 1
+2025-02-01 12:37:44,720 [DEBUG] hpack.hpack: Decoded 64, consumed 1 bytes
+2025-02-01 12:37:44,722 [DEBUG] hpack.hpack: Decoded (b'alt-svc', b'h3=":443"; ma=86400'), consumed 1
+2025-02-01 12:37:44,722 [DEBUG] httpcore.http2: receive_response_headers.complete return_value=(400, [(b'date', b'Sat, 01 Feb 2025 09:37:44 GMT'), (b'content-type', b'application/json; charset=utf-8'), (b'cf-ray', b'90b0f6eddef4376a-HEL'), (b'cf-cache-status', b'DYNAMIC'), (b'content-encoding', b'gzip'), (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), (b'vary', b'Accept-Encoding'), (b'sb-gateway-version', b'1'), (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), (b'x-content-type-options', b'nosniff'), (b'x-envoy-attempt-count', b'1'), (b'x-envoy-upstream-service-time', b'12'), (b'server', b'cloudflare'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2025-02-01 12:37:44,724 [INFO] httpx: HTTP Request: GET https://fxstwwkesfacwevyzbho.supabase.co/rest/v1/agents?select=%2A&id=eq.list "HTTP/2 400 Bad Request"
+2025-02-01 12:37:44,728 [DEBUG] httpcore.http2: receive_response_body.started request=<Request [b'GET']> stream_id=3
+2025-02-01 12:37:44,730 [DEBUG] httpcore.http2: receive_response_body.complete
+2025-02-01 12:37:44,730 [DEBUG] httpcore.http2: response_closed.started stream_id=3
+2025-02-01 12:37:44,730 [DEBUG] httpcore.http2: response_closed.complete
+2025-02-01 12:37:44,731 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 12:37:44,731 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 12:37:44,739 [DEBUG] agentique: Fetching agent with id: list
+2025-02-01 12:37:44,744 [DEBUG] httpcore.http2: send_request_headers.started request=<Request [b'GET']> stream_id=5
+2025-02-01 12:37:44,752 [DEBUG] hpack.hpack: Adding (b':method', b'GET') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,752 [DEBUG] hpack.hpack: Encoding 2 with 7 bits
+2025-02-01 12:37:44,752 [DEBUG] hpack.hpack: Adding (b':authority', b'fxstwwkesfacwevyzbho.supabase.co') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,752 [DEBUG] hpack.hpack: Encoding 71 with 7 bits
+2025-02-01 12:37:44,753 [DEBUG] hpack.hpack: Adding (b':scheme', b'https') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,754 [DEBUG] hpack.hpack: Encoding 7 with 7 bits
+2025-02-01 12:37:44,754 [DEBUG] hpack.hpack: Adding (b':path', b'/rest/v1/agents?select=%2A&id=eq.list') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,754 [DEBUG] hpack.hpack: Encoding 70 with 7 bits
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Adding (b'accept', b'*/*') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Encoding 69 with 7 bits
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Adding (b'accept-encoding', b'gzip, deflate') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Encoding 16 with 7 bits
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Adding (b'user-agent', b'python-httpx/0.27.2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Encoding 68 with 7 bits
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Adding (b'x-client-info', b'supabase-py/2.6.0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,755 [DEBUG] hpack.hpack: Encoding 67 with 7 bits
+2025-02-01 12:37:44,757 [DEBUG] hpack.hpack: Adding (b'apikey', b'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,757 [DEBUG] hpack.hpack: Encoding 66 with 7 bits
+2025-02-01 12:37:44,757 [DEBUG] hpack.hpack: Adding (b'authorization', b'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c3R3d2tlc2ZhY3dldnl6YmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5OTQ2NjksImV4cCI6MjA1MzU3MDY2OX0.n-VSmdPS7Ys_ei0RlXZaARXX1wo3HhZB4M0-iTqdgi0') to the header table, sensitive:True, huffman:True
+2025-02-01 12:37:44,757 [DEBUG] hpack.hpack: Encoding 23 with 4 bits
+2025-02-01 12:37:44,758 [DEBUG] hpack.hpack: Encoding 170 with 7 bits
+2025-02-01 12:37:44,758 [DEBUG] hpack.hpack: Adding (b'accept-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,758 [DEBUG] hpack.hpack: Encoding 65 with 7 bits
+2025-02-01 12:37:44,774 [DEBUG] hpack.hpack: Adding (b'content-profile', b'public') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,774 [DEBUG] hpack.hpack: Encoding 64 with 7 bits
+2025-02-01 12:37:44,775 [DEBUG] hpack.hpack: Adding (b'content-length', b'2') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,775 [DEBUG] hpack.hpack: Encoding 63 with 7 bits
+2025-02-01 12:37:44,776 [DEBUG] hpack.hpack: Adding (b'content-type', b'application/json') to the header table, sensitive:False, huffman:True
+2025-02-01 12:37:44,776 [DEBUG] hpack.hpack: Encoding 62 with 7 bits
+2025-02-01 12:37:44,776 [DEBUG] hpack.hpack: Encoded header block to b'\x82\xc7\x87\xc6\xc5\x90\xc4\xc3\xc2\x1f\x08\xff+\xbaQ\xd8[\x14/\xac\xb3\xc7\x88\x86\xd4l\xb98{\xc8\x1d&\xc8\x8c\x95ml\x97\xb29\x93\xad\x7f\x9coe}r\xfa\xcbY\x19\xd0mF\xcb\xeeO\xcb\xb3\xf3\xa7\x0f\xbf\xdd\xd9\x11\x92\xac\xb4~\x9b#\x99)\xfdh\x8c\xedfA&\x82\x0b\xf6~l\xc9D\x95P\xe7:g\xef\x90\xde\x0cJ_G\xee\xec\x8ed\xa7\r\xb1\x89\xa3g\xbd\x96\xbe\x7f\x9b\r\xab\xa6\x06t{#z\xb7\xec\x16\x9e\x9dQ\x92\x9e-\x12\xf6G4t\x84:=\xf0gE\xfeb\xd5\xf8\x05\xea[\x8e\xead\xd7\xb9\xdeh\x88\xa6\x06\xda??G\x0e\xdf\xcf\xc0\xf8;8\xe7\xfd\xba\xd6\x80,m\xfd\xa4\x98\xc0\xc1\xc0\xbf\xbe'
+2025-02-01 12:37:44,777 [DEBUG] httpcore.http2: send_request_headers.complete
+2025-02-01 12:37:44,777 [DEBUG] httpcore.http2: send_request_body.started request=<Request [b'GET']> stream_id=5
+2025-02-01 12:37:44,778 [DEBUG] httpcore.http2: send_request_body.complete
+2025-02-01 12:37:44,779 [DEBUG] httpcore.http2: receive_response_headers.started request=<Request [b'GET']> stream_id=5
+2025-02-01 12:37:45,009 [DEBUG] hpack.hpack: Decoding b'\x8ca\x96\xdc4\xfd(\x00\xa9\x84\xb1\xa8 \t\xb5\x00\xfd\xc6]\xb8\xd3jb\xd1\xbf\xcd\x7f\r\x8f|\x11\x82W\x0b+\xcf>\xd3.\xb85\xb1\xe0\xcf\xcc\xcb\xca\xc9\xc8\xc7\xc6\xc5\x7f\x05\x015\xc4\xc3'
+2025-02-01 12:37:45,009 [DEBUG] hpack.hpack: Decoded 12, consumed 1 bytes
+2025-02-01 12:37:45,010 [DEBUG] hpack.hpack: Decoded (b':status', b'400'), consumed 1
+2025-02-01 12:37:45,010 [DEBUG] hpack.hpack: Decoded 33, consumed 1 bytes
+2025-02-01 12:37:45,010 [DEBUG] hpack.hpack: Decoded 22, consumed 1 bytes
+2025-02-01 12:37:45,011 [DEBUG] hpack.hpack: Decoded (b'date', b'Sat, 01 Feb 2025 09:37:45 GMT'), total consumed 24 bytes, indexed True
+2025-02-01 12:37:45,011 [DEBUG] hpack.hpack: Decoded 77, consumed 1 bytes
+2025-02-01 12:37:45,011 [DEBUG] hpack.hpack: Decoded (b'content-type', b'application/json; charset=utf-8'), consumed 1
+2025-02-01 12:37:45,011 [DEBUG] hpack.hpack: Decoded 76, consumed 2 bytes
+2025-02-01 12:37:45,012 [DEBUG] hpack.hpack: Decoded 15, consumed 1 bytes
+2025-02-01 12:37:45,012 [DEBUG] hpack.hpack: Decoded (b'cf-ray', b'90b0f6ef8894376a-HEL'), total consumed 18 bytes, indexed True
+2025-02-01 12:37:45,012 [DEBUG] hpack.hpack: Decoded 76, consumed 1 bytes
+2025-02-01 12:37:45,012 [DEBUG] hpack.hpack: Decoded (b'cf-cache-status', b'DYNAMIC'), consumed 1
+2025-02-01 12:37:45,013 [DEBUG] hpack.hpack: Decoded 75, consumed 1 bytes
+2025-02-01 12:37:45,013 [DEBUG] hpack.hpack: Decoded (b'content-encoding', b'gzip'), consumed 1
+2025-02-01 12:37:45,013 [DEBUG] hpack.hpack: Decoded 74, consumed 1 bytes
+2025-02-01 12:37:45,013 [DEBUG] hpack.hpack: Decoded (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), consumed 1
+2025-02-01 12:37:45,013 [DEBUG] hpack.hpack: Decoded 73, consumed 1 bytes
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded (b'vary', b'Accept-Encoding'), consumed 1
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded 72, consumed 1 bytes
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded (b'sb-gateway-version', <memory at 0x7fecf6cf5dc0>), consumed 1
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded 71, consumed 1 bytes
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), consumed 1
+2025-02-01 12:37:45,014 [DEBUG] hpack.hpack: Decoded 70, consumed 1 bytes
+2025-02-01 12:37:45,015 [DEBUG] hpack.hpack: Decoded (b'x-content-type-options', b'nosniff'), consumed 1
+2025-02-01 12:37:45,016 [DEBUG] hpack.hpack: Decoded 69, consumed 1 bytes
+2025-02-01 12:37:45,016 [DEBUG] hpack.hpack: Decoded (b'x-envoy-attempt-count', <memory at 0x7fecf6cf5e80>), consumed 1
+2025-02-01 12:37:45,016 [DEBUG] hpack.hpack: Decoded 68, consumed 2 bytes
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded 1, consumed 1 bytes
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded (b'x-envoy-upstream-service-time', <memory at 0x7fecf725e040>), total consumed 4 bytes, indexed True
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded 68, consumed 1 bytes
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded (b'server', b'cloudflare'), consumed 1
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded 67, consumed 1 bytes
+2025-02-01 12:37:45,017 [DEBUG] hpack.hpack: Decoded (b'alt-svc', b'h3=":443"; ma=86400'), consumed 1
+2025-02-01 12:37:45,018 [DEBUG] httpcore.http2: receive_response_headers.complete return_value=(400, [(b'date', b'Sat, 01 Feb 2025 09:37:45 GMT'), (b'content-type', b'application/json; charset=utf-8'), (b'cf-ray', b'90b0f6ef8894376a-HEL'), (b'cf-cache-status', b'DYNAMIC'), (b'content-encoding', b'gzip'), (b'strict-transport-security', b'max-age=31536000; includeSubDomains'), (b'vary', b'Accept-Encoding'), (b'sb-gateway-version', b'1'), (b'sb-project-ref', b'fxstwwkesfacwevyzbho'), (b'x-content-type-options', b'nosniff'), (b'x-envoy-attempt-count', b'1'), (b'x-envoy-upstream-service-time', b'5'), (b'server', b'cloudflare'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2025-02-01 12:37:45,018 [INFO] httpx: HTTP Request: GET https://fxstwwkesfacwevyzbho.supabase.co/rest/v1/agents?select=%2A&id=eq.list "HTTP/2 400 Bad Request"
+2025-02-01 12:37:45,018 [DEBUG] httpcore.http2: receive_response_body.started request=<Request [b'GET']> stream_id=5
+2025-02-01 12:37:45,019 [DEBUG] httpcore.http2: receive_response_body.complete
+2025-02-01 12:37:45,019 [DEBUG] httpcore.http2: response_closed.started stream_id=5
+2025-02-01 12:37:45,019 [DEBUG] httpcore.http2: response_closed.complete
+2025-02-01 12:37:45,021 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 12:37:45,021 [ERROR] uvicorn.error: Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/kulishov/agentiqueAI/backend/app/routes/agent.py", line 120, in get_agent
+    agent = await get_agent_by_id(agent_id)
+  File "/Users/kulishov/agentiqueAI/backend/app/services/db_service.py", line 63, in get_agent_by_id
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+  File "/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "list"'}
+2025-02-01 13:54:29,309 [INFO] uvicorn.error: Shutting down
+2025-02-01 13:54:29,309 [INFO] uvicorn.error: Shutting down
+2025-02-01 13:54:29,439 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-02-01 13:54:29,439 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-02-01 13:54:29,516 [INFO] uvicorn.error: Application shutdown complete.
+2025-02-01 13:54:29,516 [INFO] uvicorn.error: Application shutdown complete.
+2025-02-01 13:54:29,518 [INFO] uvicorn.error: Finished server process [78411]
+2025-02-01 13:54:29,518 [INFO] uvicorn.error: Finished server process [78411]
+2025-02-01 13:54:42,484 [INFO] agentique: Initializing Supabase client with URL: https://fxstwwkesfacwevyzbho.supabase.co
+2025-02-01 13:54:42,504 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-01 13:54:42,510 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-02-01 13:54:45,124 [INFO] agentique: Initializing OpenAI client
+2025-02-01 13:54:45,128 [DEBUG] httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-01 13:54:45,129 [DEBUG] httpx: load_verify_locations cafile='/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/certifi/cacert.pem'
+2025-02-01 13:54:45,833 [INFO] agentique: Initializing Pinecone client
+2025-02-01 13:54:45,837 [INFO] pinecone_plugin_interface.logging: Discovering subpackages in _NamespacePath(['/Users/kulishov/agentiqueAI/backend/venv/lib/python3.8/site-packages/pinecone_plugins'])
+2025-02-01 13:54:45,854 [INFO] pinecone_plugin_interface.logging: Looking for plugins in pinecone_plugins.inference
+2025-02-01 13:54:45,992 [INFO] pinecone_plugin_interface.logging: Installing plugin inference into Pinecone
+2025-02-01 13:54:47,165 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-02-01 13:54:47,165 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"indexes":[{"name":"agentique","metric":"cosine","dimension":384,"status":{"ready":true,"state":"Ready"},"host":"agentique-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"indexname","metric":"cosine","dimension":1024,"status":{"ready":true,"state":"Ready"},"host":"indexname-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"},{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}]}'
+2025-02-01 13:54:47,173 [INFO] agentique: Using existing Pinecone index: agentique-index
+2025-02-01 13:54:47,463 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-02-01 13:54:47,463 [DEBUG] pinecone.core.openapi.shared.rest: response body: b'{"name":"agentique-index","metric":"cosine","dimension":1536,"status":{"ready":true,"state":"Ready"},"host":"agentique-index-j8guh47.svc.aped-4627-b74a.pinecone.io","spec":{"serverless":{"region":"us-east-1","cloud":"aws"}},"deletion_protection":"disabled"}'
+2025-02-01 13:54:47,744 [INFO] uvicorn.error: Started server process [80567]
+2025-02-01 13:54:47,744 [INFO] uvicorn.error: Started server process [80567]
+2025-02-01 13:54:47,744 [INFO] uvicorn.error: Waiting for application startup.
+2025-02-01 13:54:47,744 [INFO] uvicorn.error: Waiting for application startup.
+2025-02-01 13:54:47,745 [INFO] uvicorn.error: Application startup complete.
+2025-02-01 13:54:47,745 [INFO] uvicorn.error: Application startup complete.
