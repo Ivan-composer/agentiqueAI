@@ -121,4 +121,39 @@ async def record_transaction(user_id: str, credits_change: int, reason: str) -> 
         return response.data[0]
     except Exception as e:
         logger.error("Failed to record transaction for user_id: %s - %s", user_id, str(e))
+        raise
+
+async def list_agents() -> List[Dict[str, Any]]:
+    """
+    List all active agents.
+    """
+    logger.debug("Fetching all active agents")
+    try:
+        response = supabase.table("agents").select("*").eq("status", "active").execute()
+        logger.info("Successfully fetched %d agents", len(response.data))
+        return response.data
+    except Exception as e:
+        logger.error("Failed to fetch agents - %s", str(e))
+        raise
+
+async def delete_agent(agent_id: str) -> bool:
+    """
+    Delete an agent by ID.
+    
+    Args:
+        agent_id: The ID of the agent to delete
+        
+    Returns:
+        bool: True if successful, False if agent not found
+    """
+    logger.debug("Deleting agent with id: %s", agent_id)
+    try:
+        response = supabase.table("agents").delete().eq("id", agent_id).execute()
+        if response.data:
+            logger.info("Successfully deleted agent with id: %s", agent_id)
+            return True
+        logger.info("No agent found with id: %s", agent_id)
+        return False
+    except Exception as e:
+        logger.error("Failed to delete agent with id: %s - %s", agent_id, str(e))
         raise 

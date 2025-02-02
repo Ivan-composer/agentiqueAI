@@ -5,7 +5,9 @@ Handles authentication, channel access, and message retrieval with rate limiting
 import os
 from typing import List, Dict, Any, Optional
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 from telethon.tl.types import Message
+from telethon.tl.functions.channels import GetFullChannelRequest
 from datetime import datetime, timedelta
 import asyncio
 from app.utils.logger import logger
@@ -18,13 +20,19 @@ APP_VERSION = "9.3.3"
 LANG_CODE = "en"
 SYSTEM_LANG_CODE = "en"
 
+# Default session name for consistency
+DEFAULT_SESSION_NAME = "agentique_bot"
+
+# Default message limit to avoid overloading
+DEFAULT_MESSAGE_LIMIT = 50
+
 class TelegramService:
     def __init__(self, session: Optional[str] = None):
         """
         Initialize Telegram client with API credentials.
         
         Args:
-            session: Optional custom session name. If not provided, uses phone number.
+            session: Optional session string. If not provided, uses default bot session.
             
         Raises:
             TelegramError: If required credentials are missing
@@ -37,26 +45,43 @@ class TelegramService:
             logger.error("Missing Telegram credentials in environment variables")
             raise TelegramError("initialization", {"error": "Missing required credentials"})
         
-        # Use custom session name if provided, otherwise use phone number
-        session_name = session if session else self.phone
+        # Get the session string from environment if available
+        session_string = os.getenv("TELEGRAM_SESSION_STRING")
         
-        # Ensure sessions directory exists
-        os.makedirs("sessions", exist_ok=True)
-        
-        # Use absolute path for session file
-        session_path = os.path.abspath(os.path.join("sessions", session_name))
-        logger.info("Using session file: %s", session_path)
-        
-        self.client = TelegramClient(
-            session_path,
-            self.api_id,
-            self.api_hash,
-            device_model=DEVICE_MODEL,
-            system_version=SYSTEM_VERSION,
-            app_version=APP_VERSION,
-            lang_code=LANG_CODE,
-            system_lang_code=SYSTEM_LANG_CODE
-        )
+        if session_string:
+            logger.info("Using provided session string")
+            self.client = TelegramClient(
+                StringSession(session_string),
+                self.api_id,
+                self.api_hash,
+                device_model=DEVICE_MODEL,
+                system_version=SYSTEM_VERSION,
+                app_version=APP_VERSION,
+                lang_code=LANG_CODE,
+                system_lang_code=SYSTEM_LANG_CODE
+            )
+        else:
+            # Get the absolute path to the backend directory
+            backend_dir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            
+            # Ensure sessions directory exists in backend root
+            sessions_dir = os.path.join(backend_dir, "sessions")
+            os.makedirs(sessions_dir, exist_ok=True)
+            
+            # Use absolute path for session file
+            session_path = os.path.join(sessions_dir, DEFAULT_SESSION_NAME)
+            logger.info("Using session file: %s", session_path)
+            
+            self.client = TelegramClient(
+                session_path,
+                self.api_id,
+                self.api_hash,
+                device_model=DEVICE_MODEL,
+                system_version=SYSTEM_VERSION,
+                app_version=APP_VERSION,
+                lang_code=LANG_CODE,
+                system_lang_code=SYSTEM_LANG_CODE
+            )
 
     async def connect(self) -> None:
         """
@@ -112,7 +137,7 @@ class TelegramService:
         
         Args:
             channel_link: The channel's username or invite link
-            limit: Maximum number of messages to retrieve
+            limit: Maximum number of messages to retrieve (defaults to DEFAULT_MESSAGE_LIMIT)
             min_id: Minimum message ID to retrieve (for partial ingestion)
             offset_date: Only retrieve messages after this date
             
@@ -125,31 +150,61 @@ class TelegramService:
         try:
             await self.connect()
             
-            logger.info("Fetching messages from channel: %s", channel_link)
-            channel = await self.client.get_entity(channel_link)
+            # Clean up channel link
+            channel_link = channel_link.strip()
+            if channel_link.startswith('https://t.me/'):
+                channel_link = channel_link[13:]  # Remove https://t.me/
+            elif not channel_link.startswith('@'):
+                channel_link = f"@{channel_link}"  # Add @ if not present
+            
+            # Remove any trailing slashes
+            channel_link = channel_link.rstrip('/')
+            
+            logger.info("Attempting to fetch messages from channel: %s", channel_link)
+            
+            # Try to get the channel entity
+            try:
+                logger.debug("Getting entity for channel: %s", channel_link)
+                channel = await self.client.get_entity(channel_link)
+            except Exception as e:
+                logger.error("Failed to get channel entity: %s", str(e))
+                raise TelegramError("channel_access", {
+                    "error": str(e),
+                    "channel": channel_link,
+                    "details": "Channel might be private or not exist"
+                })
+
+            if not channel:
+                raise TelegramError("channel_access", {
+                    "error": "Could not get channel entity",
+                    "channel": channel_link,
+                    "details": "Channel might be private or not exist"
+                })
+            
+            logger.info("Successfully got channel entity, fetching messages...")
             
             # Prepare parameters for message retrieval
             kwargs = {
-                "limit": limit,
-                "reverse": True  # Get oldest messages first
+                "limit": min(limit if limit else DEFAULT_MESSAGE_LIMIT, DEFAULT_MESSAGE_LIMIT),  # Never exceed DEFAULT_MESSAGE_LIMIT
+                "reverse": False  # Get newest messages first
             }
             if min_id:
                 kwargs["min_id"] = min_id
             if offset_date:
                 kwargs["offset_date"] = offset_date
             
+            logger.info("Fetching up to %d messages from channel", kwargs["limit"])
+            
             messages = []
             message_count = 0
             last_message_time = None
             
-            async for message in self.client.iter_messages(channel, **kwargs):
+            # Use get_messages instead of iter_messages for a fixed limit
+            telegram_messages = await self.client.get_messages(channel, **kwargs)
+            
+            for message in telegram_messages:
                 if not isinstance(message, Message) or not message.text:
                     continue
-                
-                # Add rate limiting delay every 100 messages
-                if message_count > 0 and message_count % 100 == 0:
-                    logger.debug("Rate limiting delay after %d messages", message_count)
-                    await asyncio.sleep(2)  # 2 second delay every 100 messages
                 
                 # Format message data
                 message_data = {
@@ -163,14 +218,16 @@ class TelegramService:
                 messages.append(message_data)
                 message_count += 1
                 last_message_time = message.date
-                
-                # Log progress periodically
-                if message_count % 500 == 0:
-                    logger.info("Retrieved %d messages from %s", message_count, channel_link)
             
-            logger.info("Successfully retrieved %d messages from %s", len(messages), channel_link)
+            if not messages:
+                logger.warning("No messages found in channel %s", channel_link)
+            else:
+                logger.info("Successfully retrieved %d messages from %s", len(messages), channel_link)
+            
             return messages
             
+        except TelegramError:
+            raise
         except Exception as e:
             logger.error("Failed to retrieve messages from %s: %s", channel_link, str(e))
             raise TelegramError("message_retrieval", {"error": str(e), "channel": channel_link})
@@ -198,3 +255,33 @@ class TelegramService:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.disconnect()
+
+    async def get_channel_info(self, channel_link: str) -> Dict[str, Any]:
+        """
+        Get information about a Telegram channel.
+        
+        Args:
+            channel_link: The channel link or username
+            
+        Returns:
+            Dict containing channel info (title, id, etc.)
+            
+        Raises:
+            TelegramError: If channel cannot be accessed or other errors occur
+        """
+        try:
+            # Get the channel entity
+            channel = await self.client.get_entity(channel_link)
+            
+            # Get full channel info
+            full_channel = await self.client(GetFullChannelRequest(channel))
+            
+            return {
+                "title": full_channel.chats[0].title,
+                "id": channel.id,
+                "participant_count": full_channel.full_chat.participants_count
+            }
+            
+        except Exception as e:
+            logger.error("Failed to get channel info for %s: %s", channel_link, str(e))
+            raise TelegramError("channel_access", {"error": str(e), "channel": channel_link})

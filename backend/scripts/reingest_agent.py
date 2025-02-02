@@ -18,7 +18,7 @@ load_dotenv()
 logger.info("Environment variables:")
 logger.info("OPENAI_API_KEY: %s", os.getenv("OPENAI_API_KEY"))
 logger.info("PINECONE_API_KEY: %s", os.getenv("PINECONE_API_KEY"))
-logger.info("PINECONE_ENV: %s", os.getenv("PINECONE_ENV"))
+logger.info("PINECONE_ENVIRONMENT: %s", os.getenv("PINECONE_ENVIRONMENT"))
 logger.info("TELEGRAM_API_ID: %s", os.getenv("TELEGRAM_API_ID"))
 
 # Add backend directory to Python path
@@ -30,8 +30,8 @@ from app.services.pinecone_service import upsert_vectors
 from uuid import uuid4
 
 # Constants
-AGENT_ID = "32fa1961-eb7c-4672-b1da-f91aa272b366"  # serafim.eth
-CHANNEL_LINK = "@serafimcloud"
+AGENT_ID = "518e61b9-b660-4994-8c5b-02b4bf65bdc7"  # Durov's agent ID
+CHANNEL_LINK = "@durov"  # Durov's channel
 
 async def main():
     try:

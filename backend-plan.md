@@ -39,7 +39,7 @@
          data = resp.json()
          assert data.get("status") == "ok"
      ```
-   - This ensures you can quickly test your environment. You’ll run the server (`uvicorn app.main:app --reload`) in one terminal, then run `pytest test_health.py` in another.
+   - This ensures you can quickly test your environment. You'll run the server (`uvicorn app.main:app --reload`) in one terminal, then run `pytest test_health.py` in another.
 
 ---
 
@@ -183,7 +183,7 @@ supabase = create_client(
 
    pinecone.init(
        api_key=os.getenv("PINECONE_API_KEY"),
-       environment=os.getenv("PINECONE_ENV")
+       environment=os.getenv("PINECONE_ENVIRONMENT")
    )
 
    if "agentique-index" not in pinecone.list_indexes():
@@ -259,14 +259,14 @@ supabase = create_client(
    LANG_CODE = "en"
    SYSTEM_LANG_CODE = "en"
    ```
-   - Provide these to the Telethon client so Telegram sees you as a separate “Mac device,” not your real session.
+   - Provide these to the Telethon client so Telegram sees you as a separate "Mac device," not your real session.
 
 2. **Partial Ingestion**  
-   - If channels are large, you can store a “last_msg_id” or “last_date” in the `agents` table.  
+   - If channels are large, you can store a "last_msg_id" or "last_date" in the `agents` table.  
    - Each ingestion run starts from the saved offset/ID to avoid re-fetching older messages.  
 
 3. **Possible Rate Limits**  
-   - If the channel is very active, you might add a small **sleep** or **rate-limit** logic if you see Telethon raise “FloodWaitError.”  
+   - If the channel is very active, you might add a small **sleep** or **rate-limit** logic if you see Telethon raise "FloodWaitError."  
    - Keep code minimal, but add docstrings explaining it.
 
 4. **Edge Cases**  
@@ -317,14 +317,14 @@ supabase = create_client(
        # minimal code => do supabase update => add transaction record
        ...
    ```
-   - Possibly protect it with a small “admin password” in environment or a user role check.
+   - Possibly protect it with a small "admin password" in environment or a user role check.
 
 3. **Enhancing Partial Ingestion**  
    - If the channel is too big, you might automatically schedule ingestion runs or do a chunk-based approach. Keep code minimal but docstrings explaining repeated tasks.
 
 ### 7.3 Testing Step 7
 
-1. **Verify** you can top up a user’s credits, then **deduct** them with the same logic.  
+1. **Verify** you can top up a user's credits, then **deduct** them with the same logic.  
 2. **Check** `transactions` table logs each usage or top-up with a reason.  
 3. **Ingestion** expansions: run the partial ingestion multiple times, see if it picks up from the correct offset or date.  
 4. **Ensure** if a user tries to chat without enough credits, you return an error.
@@ -366,14 +366,14 @@ def rag_retrieve_and_summarize(query: str, agent_id: Optional[str] = None) -> st
 
 ### 8.3 Different Output Styles
 
-- **Chat** might want a more conversational result: “Sure, here’s a bullet list: ...”.
-- **Search** might want “Here are the top 5 results with references: ...”.  
+- **Chat** might want a more conversational result: "Sure, here's a bullet list: ...".
+- **Search** might want "Here are the top 5 results with references: ...".  
 - Keep the same function but add a `mode="chat"|"search"` param if needed.
 
 ### 8.4 Consistent References
 
-- Make sure both chat and search code **show** `source_link` from Pinecone’s metadata in a uniform way, e.g. `(source: <link>)`.
-- Possibly unify them so the user sees the same reference format across chat or search, if that’s desired.
+- Make sure both chat and search code **show** `source_link` from Pinecone's metadata in a uniform way, e.g. `(source: <link>)`.
+- Possibly unify them so the user sees the same reference format across chat or search, if that's desired.
 
 ### 8.5 Testing Step 8
 
@@ -383,7 +383,7 @@ def rag_retrieve_and_summarize(query: str, agent_id: Optional[str] = None) -> st
 2. **Search** route calls `rag_retrieve_and_summarize(query, agent_id=None)`.  
    - Confirm it returns global results from all agents.  
    - Check references are bullet or any consistent format.  
-3. **Edge Cases**: If agent has zero data or query is empty, handle gracefully (like returning “No relevant chunks found.”).
+3. **Edge Cases**: If agent has zero data or query is empty, handle gracefully (like returning "No relevant chunks found.").
 
 ---
 
@@ -421,7 +421,7 @@ Keep the **logic** minimal, but add short docstrings on each route explaining ho
   ```
 - **requirements.txt** is already there.  
 - In **Railway** dashboard, add your env vars:
-  - `SUPABASE_URL`, `SUPABASE_KEY`, `PINECONE_API_KEY`, `PINECONE_ENV`, `OPENAI_API_KEY`, `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`, etc.
+  - `SUPABASE_URL`, `SUPABASE_KEY`, `PINECONE_API_KEY`, `PINECONE_ENVIRONMENT`, `OPENAI_API_KEY`, `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`, etc.
 
 ### 10.2 Testing Step 10
 
@@ -438,12 +438,3 @@ Keep the **logic** minimal, but add short docstrings on each route explaining ho
 - Keep code minimal but docstring explaining multiple workers can handle concurrent requests.
 
 ---
-
-## Conclusion
-
-Steps 6–10 now include:
-
-- **Step 6**: Refined partial ingestion logic & Telegram device info, mention big channel edge cases.  
-- **Step 8**: Unify chat vs. search retrieval, ensuring consistent references. Possibly a `mode` param for final formatting.  
-- A short **testing** approach on each step, verifying either partial ingestion, credit usage, or global search references.  
-- Minimal code lines remain the priority, but docstrings & comments ensure future devs understand the system thoroughly.

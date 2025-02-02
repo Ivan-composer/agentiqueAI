@@ -1,5 +1,5 @@
 """
-rag_service.py: Unifies retrieval for chat vs. search.
+RAG service for retrieving and generating responses using Pinecone and OpenAI.
 
 This module provides a unified approach to RAG (Retrieval Augmented Generation)
 for both chat and search functionalities. It uses the same core logic but
@@ -7,10 +7,11 @@ allows filtering by agent_id for chat-specific queries.
 """
 from typing import Optional, List, Dict, Any
 from app.services.openai_service import generate_embedding, generate_completion
-from app.services.pinecone_service import index, query_similar
+from app.services.pinecone_service import query_similar
+from app.utils.logger import logger
 
 # Number of chunks to retrieve from Pinecone
-TOP_K = 5
+TOP_K = 10
 
 def format_references(chunks: List[Dict[str, Any]]) -> str:
     """
@@ -26,7 +27,10 @@ def format_references(chunks: List[Dict[str, Any]]) -> str:
     for chunk in chunks:
         text = chunk['text']
         source = chunk['metadata'].get('source_link', 'Unknown source')
-        references.append(f"• {text} (source: {source})")
+        score = chunk.get('score', 0.0)
+        references.append(f"• {text} (source: {source}, relevance: {score:.3f})")
+        # Log each chunk for debugging
+        logger.debug("Retrieved chunk: %s (score: %.3f)", text[:100] + "...", score)
     return "\n".join(references)
 
 async def rag_retrieve_and_summarize(
@@ -35,52 +39,70 @@ async def rag_retrieve_and_summarize(
     mode: str = "chat"
 ) -> str:
     """
-    Unified RAG function that handles both chat and search queries.
-
+    Perform RAG: embed query, retrieve from Pinecone, generate completion.
+    
     Args:
-        query: The user's query text
-        agent_id: Optional agent ID to filter results (used in chat mode)
-        mode: Either "chat" or "search" to determine response style
-
+        query: The user's query
+        agent_id: Optional agent ID to filter results
+        mode: Either "chat" or "search"
+        
     Returns:
         Generated response with references
-
-    Raises:
-        ValueError: If mode is invalid
     """
-    if mode not in ["chat", "search"]:
-        raise ValueError("Invalid mode. Must be 'chat' or 'search'")
+    try:
+        # Generate query embedding
+        query_embedding = await generate_embedding(query)
+        if not query_embedding:
+            logger.error("Failed to generate embedding for query: %s", query)
+            return "Failed to process your query. Please try again."
+            
+        # Query Pinecone
+        filter_params = {"agent_id": agent_id} if agent_id else {}
+        logger.debug("Querying Pinecone with filter: %s", filter_params)
+        chunks = await query_similar(
+            query_embedding,
+            top_k=TOP_K,
+            filter_params=filter_params
+        )
+        
+        if not chunks:
+            logger.warning("No chunks found for query '%s' with filter %s", query, filter_params)
+            return "I couldn't find any relevant information to answer your question."
+            
+        # Log number of chunks retrieved
+        logger.info("Retrieved %d chunks for query '%s'", len(chunks), query)
+        
+        # Format context
+        context = format_references(chunks)
+        
+        # Build prompt
+        if mode == "chat":
+            prompt = f"""You are an AI expert based on the content from a specific channel. 
+Answer the following question using ONLY the information provided in the context below.
+If you can't find a relevant answer in the context, say so.
+Always reference your sources.
 
-    # Generate query embedding
-    query_embedding = await generate_embedding(query)
+Context:
+{context}
 
-    # Prepare filter for Pinecone query
-    filter_dict = {"agent_id": agent_id} if agent_id else {}
+Question: {query}
 
-    # Query Pinecone
-    results = await query_similar(
-        query_vector=query_embedding,
-        top_k=TOP_K,
-        agent_id=agent_id if mode == "chat" else None
-    )
+Please provide a helpful response based on the context:"""
+        else:  # search mode
+            prompt = f"""You are a search assistant. Summarize the most relevant information from the context below
+to answer the user's query. Include all relevant source links.
 
-    # Extract chunks and format references
-    chunks = [
-        {
-            'text': match['metadata'].get('text', ''),
-            'metadata': match['metadata']
-        }
-        for match in results
-    ]
+Context:
+{context}
 
-    # Format references
-    references = format_references(chunks)
+Query: {query}
 
-    # Build prompt based on mode
-    if mode == "chat":
-        prompt = f"Based on the following context, answer the user's question: {query}\n\nContext:\n{references}"
-    else:  # search mode
-        prompt = f"Summarize the following search results for the query: {query}\n\nResults:\n{references}"
-
-    # Generate completion
-    return await generate_completion(prompt) 
+Please provide a summary of the relevant information:"""
+            
+        # Generate completion
+        response = await generate_completion(prompt)
+        return response
+        
+    except Exception as e:
+        logger.error("Error in RAG process: %s", str(e))
+        return "I encountered an error while processing your request. Please try again." 

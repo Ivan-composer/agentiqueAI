@@ -1,70 +1,93 @@
 "use client";
 
-import { CreditCard, History } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Coins } from 'lucide-react';
 
 /**
- * Profile page component showing user information and credits.
- * Will integrate with backend user endpoints later.
+ * Profile page showing user information and credit balance.
+ * Will integrate with backend /user endpoint later.
  */
 export default function ProfilePage() {
-  // TODO: Integrate with backend to get real user data
+  // TODO: Replace with real API call
   const mockUser = {
-    name: "@user_telegram_id",
-    credits: 15,
-    transactions: [
-      { id: 1, type: 'initial', amount: 15, date: new Date().toISOString() }
-    ]
+    name: "John Doe",
+    email: "john@example.com",
+    credits: 10,
+    agentsCreated: 2,
+    totalChats: 15,
+    totalSearches: 8
+  };
+
+  const handleBuyCredits = () => {
+    // TODO: Implement credit purchase flow
+    console.log('Buy credits clicked');
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-2">Profile</h1>
-        <p className="text-muted-foreground">{mockUser.name}</p>
+        <h1 className="text-2xl font-bold mb-2">Your Profile</h1>
+        <p className="text-muted-foreground">Manage your account and credits</p>
       </div>
 
       {/* Credits Card */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-semibold">Credits Balance</CardTitle>
-          <CreditCard className="text-primary w-6 h-6" />
+      <Card className="bg-gradient-to-r from-green-50 to-blue-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Coins className="w-5 h-5" />
+            Credits Balance
+          </CardTitle>
+          <CardDescription>Available credits for AI interactions</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-primary">
-            {mockUser.credits}
+          <div className="text-center">
+            <p className="text-4xl font-bold mb-4">{mockUser.credits}</p>
+            <Button onClick={handleBuyCredits}>
+              Buy More Credits
+            </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Use credits to chat with AI agents
-          </p>
         </CardContent>
       </Card>
 
-      {/* Transaction History */}
+      {/* User Stats */}
       <Card>
-        <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-          <History className="w-5 h-5 text-muted-foreground mr-2" />
-          <CardTitle className="text-lg">Transaction History</CardTitle>
+        <CardHeader>
+          <CardTitle>Your Activity</CardTitle>
+          <CardDescription>Overview of your platform usage</CardDescription>
         </CardHeader>
-        <CardContent className="divide-y">
-          {mockUser.transactions.map(transaction => (
-            <div key={transaction.id} className="py-4 first:pt-0 last:pb-0">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium">
-                    {transaction.type === 'initial' ? 'Initial Credits' : transaction.type}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(transaction.date).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-green-600 font-medium">
-                  +{transaction.amount}
-                </div>
-              </div>
-            </div>
-          ))}
+        <CardContent className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">AI Agents Created</span>
+            <span className="font-medium">{mockUser.agentsCreated}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Total Chats</span>
+            <span className="font-medium">{mockUser.totalChats}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Total Searches</span>
+            <span className="font-medium">{mockUser.totalSearches}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* User Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Information</CardTitle>
+          <CardDescription>Your personal details</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Name</span>
+            <span className="font-medium">{mockUser.name}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Email</span>
+            <span className="font-medium">{mockUser.email}</span>
+          </div>
         </CardContent>
       </Card>
     </div>

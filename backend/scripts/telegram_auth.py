@@ -1,124 +1,139 @@
 """
-One-time authentication script for Telegram.
-This script only needs to be run ONCE to create a persistent session file.
-After running this successfully, the session file will be reused automatically.
+Script to authenticate with Telegram and create a session file.
+This only needs to be run once to create a valid session.
 """
 import os
+import sys
 import asyncio
+import logging
 from telethon import TelegramClient
-from app.utils.logger import logger
+from telethon.errors import *
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
 load_dotenv()
 
-# Device info to match MacBook Pro to avoid conflicts with personal sessions
+# Get credentials from environment variables
+API_ID = os.getenv("TELEGRAM_API_ID")
+API_HASH = os.getenv("TELEGRAM_API_HASH")
+PHONE = os.getenv("TELEGRAM_PHONE")
+
+if not all([API_ID, API_HASH, PHONE]):
+    logger.error("Missing required environment variables.")
+    print("Error: Missing required environment variables.")
+    print("Please ensure TELEGRAM_API_ID, TELEGRAM_API_HASH, and TELEGRAM_PHONE are set.")
+    sys.exit(1)
+
+# Convert API_ID to integer
+API_ID = int(API_ID)
+
+# Device info to match MacBook Pro
 DEVICE_MODEL = "MacBook Pro"
 SYSTEM_VERSION = "macOS 12.6"
 APP_VERSION = "9.3.3"
 LANG_CODE = "en"
 SYSTEM_LANG_CODE = "en"
 
-# Get the absolute path to the sessions directory
-SESSIONS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "sessions"))
+# Default session name for consistency
+DEFAULT_SESSION_NAME = "agentique_bot"
 
-async def authenticate():
-    """
-    Interactive one-time authentication with Telegram.
-    Creates a persistent session file that will be reused for all future connections.
-    """
+# Get the absolute path to the backend directory
+BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+# Ensure sessions directory exists in backend root
+SESSIONS_DIR = os.path.join(BACKEND_DIR, "sessions")
+os.makedirs(SESSIONS_DIR, exist_ok=True)
+
+# Use absolute path for session file
+SESSION_FILE = os.path.join(SESSIONS_DIR, DEFAULT_SESSION_NAME)
+
+async def main():
+    """Run the authentication flow."""
+    logger.info("Starting Telegram authentication process...")
+    print("\nStarting Telegram authentication process...")
+    
+    # Create the client with device info
+    client = TelegramClient(
+        SESSION_FILE,
+        API_ID,
+        API_HASH,
+        device_model=DEVICE_MODEL,
+        system_version=SYSTEM_VERSION,
+        app_version=APP_VERSION,
+        lang_code=LANG_CODE,
+        system_lang_code=SYSTEM_LANG_CODE
+    )
+    
     try:
-        # Get credentials from environment
-        api_id = int(os.getenv("TELEGRAM_API_ID", "0"))
-        api_hash = os.getenv("TELEGRAM_API_HASH", "")
-        phone = os.getenv("TELEGRAM_PHONE", "")
-        
-        print("\n=== One-Time Telegram Authentication ===")
-        print("This script will create a persistent session file.")
-        print("You only need to run this ONCE. The session will be reused automatically.\n")
-        
-        print(f"Using credentials:")
-        print(f"API ID: {api_id}")
-        print(f"API Hash: {api_hash[:4]}...{api_hash[-4:]}")
-        print(f"Phone: {phone}")
-        
-        if not all([api_id, api_hash, phone]):
-            logger.error("Missing Telegram credentials in environment variables")
-            print("Please set TELEGRAM_API_ID, TELEGRAM_API_HASH, and TELEGRAM_PHONE environment variables")
-            return
-        
-        # Ensure sessions directory exists
-        os.makedirs(SESSIONS_DIR, exist_ok=True)
-        session_file = os.path.join(SESSIONS_DIR, phone)
-        
-        if os.path.exists(f"{session_file}.session"):
-            print(f"\nSession file already exists at: {session_file}.session")
-            print("If you need to re-authenticate, please delete this file first.")
-            return
-            
-        print(f"\nWill create new session file at: {session_file}.session")
-        
-        # Create client
-        client = TelegramClient(
-            session_file,
-            api_id,
-            api_hash,
-            device_model=DEVICE_MODEL,
-            system_version=SYSTEM_VERSION,
-            app_version=APP_VERSION,
-            lang_code=LANG_CODE,
-            system_lang_code=SYSTEM_LANG_CODE
-        )
-        
-        print("\nConnecting to Telegram...")
-        logger.info("Starting one-time Telegram authentication process...")
+        # Start the client
+        logger.info("Connecting to Telegram...")
+        print("Connecting to Telegram...")
         await client.connect()
         
-        if not await client.is_user_authorized():
-            print("\nNot authorized. Requesting verification code...")
-            logger.info("Not authorized, sending code request...")
-            sent = await client.send_code_request(phone)
-            print(f"Code type: {sent.type}")
+        # Check if already authorized
+        if await client.is_user_authorized():
+            logger.info("Already authenticated!")
+            print("\nAlready authenticated!")
+            return
+        
+        # Send code request
+        logger.info("Sending code request...")
+        print("\nSending code request...")
+        await client.send_code_request(PHONE)
+        
+        # Get the code from user input
+        code = input("\nEnter the code you received: ")
+        
+        try:
+            # Sign in with the code
+            logger.info("Attempting to sign in...")
+            print("\nAttempting to sign in...")
+            await client.sign_in(PHONE, code)
+            logger.info("Successfully authenticated!")
+            print("\nSuccessfully authenticated!")
             
-            # Get the verification code from user input
-            verification_code = input("\nEnter the verification code sent to your Telegram: ")
+        except PhoneCodeInvalidError:
+            logger.error("Invalid code provided")
+            print("\nError: The code you entered is invalid.")
+            sys.exit(1)
+            
+        except SessionPasswordNeededError:
+            # 2FA is enabled
+            logger.info("2FA is enabled, requesting password")
+            print("\n2FA is enabled. Please enter your password:")
+            password = input("Password: ")
             
             try:
-                # Try to sign in
-                print("\nAttempting to sign in...")
-                await client.sign_in(phone, verification_code)
-                logger.info("Successfully authenticated!")
-                print("\nAuthentication successful!")
-                print(f"Created persistent session file at: {session_file}.session")
-                print("This file will be reused automatically for all future connections.")
+                await client.sign_in(password=password)
+                logger.info("Successfully authenticated with 2FA!")
+                print("\nSuccessfully authenticated with 2FA!")
+            except PasswordHashInvalidError:
+                logger.error("Invalid 2FA password")
+                print("\nError: Invalid 2FA password")
+                sys.exit(1)
                 
-            except Exception as e:
-                if "2FA" in str(e) or "password" in str(e).lower():
-                    print("\n2FA is enabled. Please enter your password.")
-                    password = input("Enter your 2FA password: ")
-                    await client.sign_in(password=password)
-                    logger.info("Successfully authenticated with 2FA!")
-                    print("\nAuthentication successful!")
-                    print(f"Created persistent session file at: {session_file}.session")
-                    print("This file will be reused automatically for all future connections.")
-                else:
-                    raise e
-        else:
-            logger.info("Already authorized!")
-            print("\nAlready authenticated! Session file exists and is valid.")
-            
     except Exception as e:
-        logger.error("Authentication failed: %s", str(e))
+        logger.error(f"Authentication failed: {str(e)}")
         print(f"\nAuthentication failed: {str(e)}")
-        if os.path.exists(f"{session_file}.session"):
-            print(f"\nRemoving invalid session file: {session_file}.session")
-            os.remove(f"{session_file}.session")
-    
+        # Clean up invalid session file
+        if os.path.exists(f"{SESSION_FILE}.session"):
+            os.remove(f"{SESSION_FILE}.session")
+        sys.exit(1)
+        
     finally:
         if 'client' in locals():
             await client.disconnect()
-            print("\nDisconnected from Telegram.")
 
 if __name__ == "__main__":
-    print("Starting one-time Telegram authentication process...")
-    asyncio.run(authenticate()) 
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nAuthentication cancelled by user.")
+        sys.exit(0) 

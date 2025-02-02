@@ -1,15 +1,16 @@
 """
 Agent-related routes for managing AI agents and their content.
 """
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Form
 from typing import Dict, Any, Optional
 from datetime import datetime
 from app.services.telegram_service import TelegramService
-from app.services.db_service import create_agent, get_agent_by_id, list_agents
+from app.services.db_service import create_agent, get_agent_by_id, list_agents, delete_agent, save_chat_message
 from app.services.openai_service import generate_embedding
 from app.services.pinecone_service import upsert_vectors
 from app.utils.logger import logger
 from uuid import uuid4
+from app.services.rag_service import rag_retrieve_and_summarize
 
 router = APIRouter()
 
@@ -40,20 +41,18 @@ async def get_agent(agent_id: str) -> Dict[str, Any]:
 
 @router.post("/create")
 async def create_agent_from_channel(
-    channel_link: str,
-    expert_name: str,
-    prompt_template: str,
-    owner_id: str,
-    limit: Optional[int] = None,
-    min_id: Optional[int] = None,
-    offset_date: Optional[datetime] = None
+    channel_link: str = Form(...),
+    prompt_template: str = Form(...),
+    owner_id: str = Form(...),
+    limit: Optional[int] = Form(None),
+    min_id: Optional[int] = Form(None),
+    offset_date: Optional[datetime] = Form(None)
 ) -> Dict[str, Any]:
     """
     Create a new agent from a Telegram channel and start ingesting its content.
     
     Args:
         channel_link: The Telegram channel link or username
-        expert_name: Name/title of the expert agent
         prompt_template: Template for agent's responses
         owner_id: ID of the user creating this agent
         limit: Optional limit on number of messages to ingest
@@ -61,13 +60,17 @@ async def create_agent_from_channel(
         offset_date: Optional date to start ingestion from
     """
     try:
-        # Create agent in database
-        logger.info("Creating agent for channel: %s", channel_link)
-        agent = await create_agent(owner_id, expert_name, prompt_template)
-        agent_id = agent["id"]
-        
         # Initialize Telegram service
         async with TelegramService() as telegram:
+            # Get channel info first
+            channel_info = await telegram.get_channel_info(channel_link)
+            channel_title = channel_info["title"]
+            
+            # Create agent in database using channel title as expert name
+            logger.info("Creating agent for channel: %s with title: %s", channel_link, channel_title)
+            agent = await create_agent(owner_id, channel_title, prompt_template)
+            agent_id = agent["id"]
+            
             # Fetch messages from channel
             messages = await telegram.get_channel_messages(
                 channel_link=channel_link,
@@ -110,6 +113,7 @@ async def create_agent_from_channel(
                     metadata.append({
                         "agent_id": agent_id,
                         "source_link": msg["link"],
+                        "text": msg["text"],
                         "date": msg["date"],
                         "views": msg["views"],
                         "forwards": msg["forwards"]
@@ -135,4 +139,100 @@ async def create_agent_from_channel(
             
     except Exception as e:
         logger.error("Failed to create agent from channel %s: %s", channel_link, str(e))
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{agent_id}")
+async def delete_agent_route(agent_id: str) -> Dict[str, Any]:
+    """
+    Delete an agent by ID.
+    """
+    try:
+        success = await delete_agent(agent_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Agent not found")
+        return {
+            "status": "success",
+            "message": f"Agent {agent_id} deleted successfully"
+        }
+    except Exception as e:
+        logger.error("Failed to delete agent: %s", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{agent_id}/chat")
+async def chat_with_agent(
+    agent_id: str,
+    message: str = Form(...),
+    user_id: str = Form(...)
+) -> Dict[str, Any]:
+    """
+    Chat with an agent using RAG.
+    
+    Args:
+        agent_id: The ID of the agent to chat with
+        message: The user's message
+        user_id: The ID of the user sending the message
+        
+    Returns:
+        The agent's response
+    """
+    try:
+        # Get agent details
+        agent = await get_agent_by_id(agent_id)
+        if not agent:
+            raise HTTPException(status_code=404, detail="Agent not found")
+            
+        try:
+            # Save user message
+            await save_chat_message(
+                agent_id=agent_id,
+                user_id=user_id,
+                role="user",
+                content=message
+            )
+        except Exception as e:
+            logger.error("Failed to save user message: %s", str(e))
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to save message: {str(e)}"
+            )
+        
+        try:
+            # Get response using RAG
+            response = await rag_retrieve_and_summarize(
+                query=message,
+                agent_id=agent_id,
+                mode="chat"
+            )
+        except Exception as e:
+            logger.error("Failed to generate response: %s", str(e))
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to generate response"
+            )
+        
+        try:
+            # Save agent response
+            await save_chat_message(
+                agent_id=agent_id,
+                user_id=user_id,
+                role="agent",
+                content=response
+            )
+        except Exception as e:
+            logger.error("Failed to save agent response: %s", str(e))
+            # Don't fail the request if saving the response fails
+            # The user still gets their answer
+            
+        return {
+            "response": response,
+            "status": "success"
+        }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Failed to process chat message: %s", str(e))
+        raise HTTPException(
+            status_code=500,
+            detail="An unexpected error occurred"
+        ) 

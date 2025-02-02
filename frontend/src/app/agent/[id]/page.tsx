@@ -19,16 +19,38 @@ export default function AgentChatPage() {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { messages, addMessage, setMessages } = useChatStore();
+  const [agent, setAgent] = useState<{
+    id: string;
+    expert_name: string;
+    status: string;
+    created_at: string;
+  } | null>(null);
+  const [isLoadingAgent, setIsLoadingAgent] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with real API call
-  const mockAgent = {
-    id,
-    name: 'Marketing Expert',
-    description: 'Expert in digital marketing and growth strategies',
-    credits_per_message: 5,
-    user_credits: 10
-  };
+  // Fetch agent details
+  useEffect(() => {
+    const fetchAgentDetails = async () => {
+      try {
+        const response = await fetch(`/api/agent/${id}`);
+        const data = await response.json();
+        if (response.ok) {
+          setAgent(data);
+        } else {
+          setError(data.detail || 'Failed to load agent details');
+        }
+      } catch (error) {
+        setError('Failed to load agent details');
+        console.error('Error fetching agent details:', error);
+      } finally {
+        setIsLoadingAgent(false);
+      }
+    };
 
+    fetchAgentDetails();
+  }, [id]);
+
+  // Load chat history
   useEffect(() => {
     const loadHistory = async () => {
       const history = await fetchChatHistory(id as string);
@@ -72,6 +94,32 @@ export default function AgentChatPage() {
 
   const currentMessages = messages[id as string] || [];
 
+  if (isLoadingAgent) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingDots className="text-primary" />
+      </div>
+    );
+  }
+
+  if (error || !agent) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-destructive">Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{error || 'Failed to load agent'}</p>
+            <Button className="mt-4 w-full" onClick={() => window.location.href = '/explore'}>
+              Return to Explore
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       {/* Header */}
@@ -85,13 +133,12 @@ export default function AgentChatPage() {
                 </Button>
               </Link>
               <div className="min-w-0">
-                <CardTitle className="truncate">{mockAgent.name}</CardTitle>
-                <CardDescription className="truncate">{mockAgent.description}</CardDescription>
+                <CardTitle className="truncate">{agent.expert_name}</CardTitle>
+                <CardDescription className="truncate">Created {new Date(agent.created_at).toLocaleDateString()}</CardDescription>
               </div>
             </div>
             <div className="text-sm text-muted-foreground mt-2">
-              Credits remaining: {mockAgent.user_credits} 
-              ({mockAgent.credits_per_message} credits per message)
+              Status: {agent.status}
             </div>
           </CardHeader>
         </Card>
@@ -145,22 +192,17 @@ export default function AgentChatPage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type your message..."
-                disabled={isLoading || mockAgent.user_credits < mockAgent.credits_per_message}
+                disabled={isLoading}
                 className="flex-1"
               />
               <Button 
                 type="submit" 
-                disabled={isLoading || !inputMessage.trim() || mockAgent.user_credits < mockAgent.credits_per_message}
+                disabled={isLoading || !inputMessage.trim()}
                 className="shrink-0"
               >
                 <Send className="w-4 h-4" />
               </Button>
             </form>
-            {mockAgent.user_credits < mockAgent.credits_per_message && (
-              <p className="text-sm text-destructive mt-2">
-                Not enough credits. Please top up in your profile.
-              </p>
-            )}
           </CardContent>
         </Card>
       </div>
