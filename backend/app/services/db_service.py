@@ -7,6 +7,7 @@ from typing import Optional, List, Dict, Any
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from app.utils.logger import logger
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -67,17 +68,71 @@ async def get_agent_by_id(agent_id: str) -> Optional[Dict[str, Any]]:
     logger.info("No agent found with id: %s", agent_id)
     return None
 
-async def create_agent(owner_id: str, expert_name: str, prompt_template: str) -> Dict[str, Any]:
+async def create_agent(
+    owner_id: str,
+    expert_name: str,
+    prompt_template: str,
+    channel_info: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Create a new agent for a user.
+    
+    Args:
+        owner_id: The ID of the agent owner
+        expert_name: The name of the expert/agent
+        prompt_template: The prompt template for the agent
+        channel_info: Dictionary containing channel information including profile picture
+        
+    Returns:
+        The created agent record
+        
+    Raises:
+        Exception: If agent creation fails
     """
     logger.info("Creating new agent for owner_id: %s, expert_name: %s", owner_id, expert_name)
+    logger.debug("Channel info received: %s", channel_info)
+    
+    # Upload profile photo to Supabase storage if available
+    profile_photo_url = None
+    if channel_info.get("profile_photo"):
+        try:
+            logger.info("Profile photo data received, size: %d bytes", len(channel_info["profile_photo"]))
+            
+            # Generate unique filename
+            photo_filename = f"agent_photos/{owner_id}_{int(datetime.now().timestamp())}.jpg"
+            logger.info("Generated filename: %s", photo_filename)
+            
+            # Upload to Supabase storage
+            logger.info("Uploading to Supabase storage...")
+            response = supabase.storage.from_("agent-photos").upload(
+                path=photo_filename,
+                file=channel_info["profile_photo"],
+                file_options={"content-type": "image/jpeg"}
+            )
+            logger.info("Upload response: %s", response)
+            
+            # Get public URL
+            profile_photo_url = supabase.storage.from_("agent-photos").get_public_url(photo_filename)
+            logger.info("Successfully uploaded profile photo: %s", profile_photo_url)
+            
+        except Exception as e:
+            logger.error("Failed to upload profile photo: %s", str(e), exc_info=True)
+            logger.error("Error type: %s", type(e).__name__)
+    else:
+        logger.warning("No profile photo found in channel info")
+    
     agent_data = {
         "owner_id": owner_id,
         "expert_name": expert_name,
         "prompt_template": prompt_template,
-        "status": "active"
+        "status": "active",
+        "profile_photo_url": profile_photo_url,
+        "channel_title": channel_info.get("title"),
+        "channel_username": channel_info.get("username"),
+        "channel_description": channel_info.get("description"),
+        "channel_participants": channel_info.get("participants_count", 0)
     }
+    
     try:
         response = supabase.table("agents").insert(agent_data).execute()
         logger.info("Successfully created agent with id: %s", response.data[0]["id"])
@@ -86,23 +141,99 @@ async def create_agent(owner_id: str, expert_name: str, prompt_template: str) ->
         logger.error("Failed to create agent for owner_id: %s - %s", owner_id, str(e))
         raise
 
-async def save_chat_message(agent_id: str, user_id: str, role: str, content: str) -> Dict[str, Any]:
+async def save_chat_message(
+    agent_id: str,
+    user_id: str,
+    role: str,
+    content: str
+) -> Dict[str, Any]:
     """
     Save a chat message to the database.
+    
+    Args:
+        agent_id: The ID of the agent
+        user_id: The ID of the user
+        role: The role of the message sender ('user' or 'agent')
+        content: The message content
+        
+    Returns:
+        The created message record
+        
+    Raises:
+        Exception: If message creation fails
     """
-    logger.debug("Saving chat message for agent_id: %s, user_id: %s", agent_id, user_id)
+    logger.info("Saving chat message - agent_id: %s, user_id: %s, role: %s", agent_id, user_id, role)
+    logger.debug("Message content: %s", content)
+    
     message_data = {
         "agent_id": agent_id,
         "user_id": user_id,
         "role": role,
         "content": content
+        # created_at will be set automatically by the database
     }
+    
     try:
+        logger.debug("Inserting message into database: %s", message_data)
         response = supabase.table("chat_messages").insert(message_data).execute()
         logger.info("Successfully saved chat message with id: %s", response.data[0]["id"])
+        logger.debug("Saved message data: %s", response.data[0])
         return response.data[0]
     except Exception as e:
-        logger.error("Failed to save chat message - %s", str(e))
+        logger.error("Failed to save chat message - %s", str(e), exc_info=True)
+        logger.error("Error type: %s", type(e).__name__)
+        raise
+
+async def get_chat_history(
+    agent_id: str,
+    user_id: str,
+    limit: int = 50,
+    before_timestamp: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """
+    Get chat history between a user and an agent.
+    
+    Args:
+        agent_id: The ID of the agent
+        user_id: The ID of the user
+        limit: Maximum number of messages to return
+        before_timestamp: Only return messages before this timestamp
+        
+    Returns:
+        List of message records in chronological order
+        
+    Raises:
+        Exception: If fetching messages fails
+    """
+    logger.info("Fetching chat history - agent_id: %s, user_id: %s, limit: %d", agent_id, user_id, limit)
+    if before_timestamp:
+        logger.debug("Fetching messages before: %s", before_timestamp)
+    
+    try:
+        # Build query
+        query = supabase.table("chat_messages")\
+            .select("*")\
+            .eq("agent_id", agent_id)\
+            .eq("user_id", user_id)\
+            .order("created_at", desc=True)\
+            .limit(limit)
+        
+        if before_timestamp:
+            query = query.lt("created_at", before_timestamp)
+        
+        logger.debug("Executing query...")
+        response = query.execute()
+        logger.debug("Raw response data: %s", response.data)
+        
+        # Return messages in chronological order (oldest first)
+        messages = sorted(response.data, key=lambda x: x["created_at"])
+        logger.info("Successfully fetched %d messages", len(messages))
+        logger.debug("Returning messages: %s", messages)
+        return messages
+        
+    except Exception as e:
+        logger.error("Failed to fetch chat history - %s", str(e), exc_info=True)
+        logger.error("Error type: %s", type(e).__name__)
         raise
 
 async def record_transaction(user_id: str, credits_change: int, reason: str) -> Dict[str, Any]:

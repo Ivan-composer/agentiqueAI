@@ -87,22 +87,28 @@ export default function ExplorePage() {
       return;
     }
     
+    // Get user ID from local storage
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      setError('Please log in to create an agent');
+      return;
+    }
+    
     setIsCreating(true);
     
     try {
       // Start progress animation
       setProgress(10);
       
+      // Create form data
+      const formData = new FormData();
+      formData.append('channel_link', telegramLink);
+      formData.append('user_id', userId);
+      
       // Call backend API to create agent
       const response = await fetch('/api/agent/create', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          channel_link: telegramLink,
-          prompt_template: DEFAULT_PROMPT_TEMPLATE,
-        }),
+        body: formData,
       });
       
       // Update progress

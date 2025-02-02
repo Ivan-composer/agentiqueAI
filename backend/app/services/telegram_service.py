@@ -3,10 +3,11 @@ Telegram service for channel content ingestion.
 Handles authentication, channel access, and message retrieval with rate limiting.
 """
 import os
-from typing import List, Dict, Any, Optional
+import base64
+from typing import List, Dict, Any, Optional, Tuple
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.types import Message
+from telethon.tl.types import Message, Channel
 from telethon.tl.functions.channels import GetFullChannelRequest
 from datetime import datetime, timedelta
 import asyncio
@@ -72,6 +73,12 @@ class TelegramService:
             session_path = os.path.join(sessions_dir, DEFAULT_SESSION_NAME)
             logger.info("Using session file: %s", session_path)
             
+            # Check if session file exists
+            if os.path.exists(f"{session_path}.session"):
+                logger.info("Found existing session file")
+            else:
+                logger.warning("No existing session file found at %s", session_path)
+            
             self.client = TelegramClient(
                 session_path,
                 self.api_id,
@@ -100,6 +107,8 @@ class TelegramService:
                     raise TelegramError("authentication", {"error": "No valid session found"})
                 
                 logger.info("Successfully connected using existing session")
+            else:
+                logger.info("Already connected to Telegram")
         except Exception as e:
             logger.error("Failed to connect to Telegram: %s", str(e))
             raise TelegramError("connection", {"error": str(e)})
@@ -258,30 +267,71 @@ class TelegramService:
 
     async def get_channel_info(self, channel_link: str) -> Dict[str, Any]:
         """
-        Get information about a Telegram channel.
+        Get channel information including profile photo.
         
         Args:
-            channel_link: The channel link or username
+            channel_link: The channel's username or invite link
             
         Returns:
-            Dict containing channel info (title, id, etc.)
+            Dictionary containing channel info including profile photo
             
         Raises:
-            TelegramError: If channel cannot be accessed or other errors occur
+            TelegramError: If channel access fails
         """
         try:
-            # Get the channel entity
-            channel = await self.client.get_entity(channel_link)
+            await self.connect()
             
-            # Get full channel info
-            full_channel = await self.client(GetFullChannelRequest(channel))
+            # Clean up channel link
+            channel_link = channel_link.strip()
+            if channel_link.startswith('https://t.me/'):
+                channel_link = channel_link[13:]
+            elif not channel_link.startswith('@'):
+                channel_link = f"@{channel_link}"
+            channel_link = channel_link.rstrip('/')
             
-            return {
-                "title": full_channel.chats[0].title,
-                "id": channel.id,
-                "participant_count": full_channel.full_chat.participants_count
-            }
-            
+            # Get channel entity
+            try:
+                channel = await self.client.get_entity(channel_link)
+                if not isinstance(channel, Channel):
+                    raise ValueError("Not a channel")
+                
+                # Get full channel info using GetFullChannelRequest
+                full_channel = await self.client(GetFullChannelRequest(channel=channel))
+                
+                # Get profile photo
+                profile_photo_b64 = None
+                if channel.photo:
+                    try:
+                        # Download profile photo
+                        profile_photo = await self.client.download_profile_photo(
+                            channel,
+                            file=bytes,  # Return as bytes
+                            download_big=True
+                        )
+                        if profile_photo:
+                            # Convert bytes to base64
+                            profile_photo_b64 = base64.b64encode(profile_photo).decode('utf-8')
+                            logger.info("Successfully downloaded and encoded channel profile photo")
+                    except Exception as e:
+                        logger.warning("Failed to download profile photo: %s", str(e))
+                
+                return {
+                    "id": channel.id,
+                    "title": channel.title,
+                    "username": channel.username,
+                    "profile_photo": profile_photo_b64,  # Now it's base64 encoded string
+                    "participants_count": getattr(full_channel.full_chat, "participants_count", 0),
+                    "description": getattr(full_channel.full_chat, "about", "")
+                }
+                
+            except Exception as e:
+                logger.error("Failed to get channel info: %s", str(e))
+                raise TelegramError("channel_access", {
+                    "error": str(e),
+                    "channel": channel_link,
+                    "details": "Channel might be private or not exist"
+                })
+                
         except Exception as e:
-            logger.error("Failed to get channel info for %s: %s", channel_link, str(e))
-            raise TelegramError("channel_access", {"error": str(e), "channel": channel_link})
+            logger.error("Failed to get channel info: %s", str(e))
+            raise TelegramError("channel_info", {"error": str(e), "channel": channel_link})

@@ -4,36 +4,36 @@
 
 **Agentique** is a multi-language AI platform enabling:
 
-1. **AI Twin Creation**: Users can create AI "agents" that function as the persona/twin of a content creator
-2. **AI Search**: RAG-based search across all agents
-3. **Social Media Commenting**: Agents leave relevant comments on Telegram (and later X) posts
-4. **Payment**: Usage costs 1 credit per action (chat, search, or comment). Creation of an agent is free
+1. **AI Twin Creation**: Users can create AI “agents” that function as the persona/twin of a content creator.  
+2. **AI Search**: RAG-based search across all agents.  
+3. **Social Media Commenting**: Agents leave relevant comments on Telegram (and later X) posts.  
+4. **Payment**: Usage costs 1 credit per action (chat, search, or comment). Creation of an agent is free.
 
 This PRD now incorporates:
 
-- **LangChain** for advanced agent logic (allowing future multi-tool expansions)
-- **DeepSeek R1** as the default LLM
-- Custom, editable prompts for each agent
-- No usage of Replit; we will host the backend on **Railway** and the frontend on **Vercel**
+- **LangChain** for advanced agent logic (allowing future multi-tool expansions).  
+- **OpenAI** (GPT-3.5) as the default LLM for completions **and** embeddings.  
+- Custom, editable prompts for each agent.  
+- No usage of Replit; we will host the backend on **Railway** and the frontend on **Vercel**.
 
 ## 2. Architecture & Technology
 
 ### 2.1 Databases
 
-1. **Supabase** (PostgreSQL)
-   - Stores user accounts, credits, agent records, chat history, transactions, etc.
-   - Potentially used for user authentication (later, if we integrate their Auth)
+1. **Supabase** (PostgreSQL)  
+   - Stores user accounts, credits, agent records, chat history, transactions, etc.  
+   - Potentially used for user authentication (later, if we integrate their Auth).
 
-2. **Pinecone** (Vector DB)
-   - Stores embeddings (chunks of scraped content)
-   - Allows quick semantic search for RAG
+2. **Pinecone** (Vector DB)  
+   - Stores embeddings (chunks of scraped content).  
+   - Allows quick semantic search for RAG.
 
 ### 2.2 Backend
 
 - **FastAPI** in `/backend/`
   - **LangChain** as the core agent framework:
-    - For chunking, storing embeddings, building "chains," and (eventually) letting agents call "tools"
-    - Integrates with Pinecone for vector retrieval, DeepSeek R1 for LLM calls
+    - For chunking, storing embeddings, building “chains,” and eventually letting agents call “tools.”
+    - Integrates with Pinecone for vector retrieval, **OpenAI** for LLM calls.
   - **Architecture**:
     ```
     backend/
@@ -42,19 +42,19 @@ This PRD now incorporates:
     │   ├── routes/            # /agent, /search, /comment, /auth, etc.
     │   ├── services/          # ingestion_service, payment_service, ai_service (LangChain logic)
     │   ├── models/            # Pydantic + DB schemas
-    │   └── utils/             # chunking, summarization helpers
+    │   └── utils/             # chunking, summarization helpers, logging, etc.
     ├── pyproject.toml
     ├── requirements.txt
     └── ...
     ```
   - **Background Tasks**:
-    - Use **FastAPI** built-in background tasks or a simple queue approach (e.g., `Celery` or `RQ`) for large scraping jobs
-    - MVP can leverage FastAPI's background tasks if volume is low
+    - Use **FastAPI** built-in background tasks or a minimal queue approach (e.g., `Celery` or `RQ`) for large scraping jobs.
+    - MVP can rely on FastAPI’s background tasks if volume is low.
 
 ### 2.3 Frontend
 
-- **Next.js 13** + **Tailwind CSS** in `/frontend/`
-  - Deployed on **Vercel**
+- **Next.js 13** + **Tailwind CSS** in `/frontend/`  
+  - Deployed on **Vercel**  
   - Pages for:
     - **Explore** (view/edit agents, create new agent)
     - **AI-Search** (global search)
@@ -64,130 +64,132 @@ This PRD now incorporates:
     - `components/` for shared UI
     - Possibly `lib/` for utility logic
 
-### 2.4 Multi-Language with DeepSeek R1
+### 2.4 Multi-Language with OpenAI
 
-- **DeepSeek R1** as the LLM for embeddings or completions:
-  - If it provides an embeddings endpoint, we use it; otherwise, we might still use text-embedding-ada-002 for embeddings
-  - The chat completions come from **DeepSeek R1**, handling multi-language queries and content seamlessly
-- **LangChain** orchestrates the RAG pipeline (embedding → Pinecone retrieval → LLM prompt construction → final answer)
+- **OpenAI** (GPT-3.5-turbo) used for completions & embeddings (`text-embedding-ada-002`) out of the box.  
+- **LangChain** orchestrates the RAG pipeline (embedding → Pinecone retrieval → final LLM prompt construction → answer).
 
 ### 2.5 In-Memory Caching
 
-- **Where**: Python dictionaries or short-lived cache in the backend
-- **What**: Store ephemeral results (partial retrievals, repeated queries) for faster responses
-- **Persistence**: None; resets on server restart. If usage grows, we could shift to Redis
+- **Where**: Python dictionaries or short-lived cache in the backend.  
+- **What**: Store ephemeral results (partial retrievals, repeated queries) for faster responses.  
+- **Persistence**: None; resets on server restart. If usage grows, we could shift to Redis or a similar solution.
+
+---
 
 ## 3. Data Model
 
-(Using Supabase for relational, Pinecone for vector.)
+**Using Supabase** for relational data, **Pinecone** for vector storage.
 
 **Supabase** Tables:
 
-1. **users**
-   - `id`, `telegram_id` (or other auth ID), `credits_balance`, timestamps
-2. **agents**
-   - `id`, `owner_id`, `creator_name`, `status`, `prompt_template` (editable prompt), timestamps
-3. **chat_messages**
-   - `id`, `agent_id`, `user_id`, `role` ("user"/"assistant"), `content`, timestamps
-4. **transactions**
-   - `id`, `user_id`, `credits_change`, `reason` ("chat", "search", "comment", "refill"), timestamps
+1. **users**  
+   - `id` (pk), `telegram_id` (or other auth ID), `credits_balance`, timestamps
+2. **agents**  
+   - `id`, `owner_id`, `expert_name` (the name of the content creator), `status`, `prompt_template`, timestamps
+3. **chat_messages**  
+   - `id`, `agent_id`, `user_id`, `role` (“system”|“user”|“assistant”), `content`, timestamps
+4. **transactions**  
+   - `id`, `user_id`, `credits_change`, `reason` (“chat”, “search”, “comment”, “refill”), timestamps
 
-**Pinecone**:
-- Index storing chunk embeddings with metadata: `agent_id`, `source_link`, possibly `language`, etc.
+**Pinecone**:  
+- Index storing chunk embeddings with metadata: `agent_id`, `source_link` (link to public post), etc.
 
-**LangChain**:
-- Each agent in Supabase references a **LangChain** "chain" or "agent" that uses:
-  - The agent's custom `prompt_template`
-  - A vector store connection (Pinecone) filtered by `agent_id`
+**LangChain**:  
+- Each agent references a chain or “agent” using:
+  - The agent’s `prompt_template`
+  - Pinecone (filtered by `agent_id` if needed)
+
+---
 
 ## 4. Feature Breakdown
 
 ### 4.1 Agent Creation (AI Twin)
 
-1. **Explore Page** → "Make AI-agent" (free, no credits deducted)
-2. User inputs public links (Telegram channel, etc.)
-3. **Background Task**:
-   - Use scraping or Telegram API
-   - **LangChain** chunking + embedding → store in Pinecone
-   - Create a new record in Supabase `agents` with an editable `prompt_template`
-   - Mark agent `status = "ready"` when done
+1. **Explore Page** → “Make AI-agent” (no credits deducted).  
+2. User inputs public links (Telegram channel, etc.).  
+3. **Background Task** (FastAPI or minimal queue):
+   - Use **Telegram** scraping/API with partial ingestion if the channel is large (store offsets in DB).
+   - **LangChain** chunking + embed with **OpenAI** → store in Pinecone.
+   - Insert a new row in Supabase `agents` with an editable `prompt_template`.  
+   - Mark agent `status = "ready"` when done.
 
-**Prompt Template**
-- Each agent has a dedicated prompt that can be updated in future. E.g., "You are [Creator Name], an expert in X. Respond only with content from your knowledge base, referencing sources..."
+**Prompt Template**:  
+- Each agent has a dedicated system prompt. e.g. “You are [Expert Name], respond using the data in your knowledge base, referencing sources.”
 
 ### 4.2 Agent Chat
 
-1. 1 **credit** per user message
-2. Chat route: `POST /agent/{agent_id}/chat`
-   - Check user credits
-   - Use **LangChain** chain/agent approach:
-     - Query Pinecone (filtered by `agent_id`)
-     - Construct the final prompt with the agent's `prompt_template` + user's message + relevant chunks
-     - Call **DeepSeek R1** for the chat response
-   - Return a structured answer (numbered list with source links)
-3. Save conversation to `chat_messages`. Update user's `credits_balance -= 1`
+1. 1 **credit** per user message.  
+2. `POST /agent/{agent_id}/chat`:  
+   - Check user credits.  
+   - Use **LangChain** to retrieve from Pinecone (filtered by `agent_id`).  
+   - Combine the retrieved context + user message → pass to **OpenAI**.  
+   - Return a structured answer referencing `source_link`.  
+   - Save the conversation in `chat_messages`.  
+   - Deduct 1 credit from user’s `credits_balance`.
 
 ### 4.3 AI Search
 
-1. 1 **credit** per search
-2. `POST /search` endpoint:
-   - Query across all agent content in Pinecone
-   - Summaries generated by LangChain with **DeepSeek R1**
-   - Return top 5 results in a Perplexity-style layout with references
-3. Deduct 1 credit from user. Record a transaction in `transactions`
+1. 1 **credit** per search.  
+2. `POST /search`:  
+   - Query across **all** agent content (no filter).  
+   - Summaries generated by **OpenAI** with a single call.  
+   - Return top results with references.  
+   - Deduct 1 credit from user, record transaction.
 
 ### 4.4 Social Media Commenting
 
-1. Summon the agent in a public Telegram post
-2. The agent fetches the post content, uses **LangChain** for RAG retrieval, calls **DeepSeek R1** to generate a relevant comment
-3. 1 credit deducted from user's balance
-4. The bot posts the comment with references
+1. Summon the agent in a public Telegram post.  
+2. The agent fetches post content, runs RAG retrieval + **OpenAI** for a relevant comment.  
+3. Deduct 1 credit. The bot posts the final comment with references.
 
 ### 4.5 Payment & Credits
 
-1. **No cost** for agent creation
-2. Each usage action (chat message, search query, comment) = **1 credit**
-3. If `credits_balance < 1`, block the request
-4. Save the usage in `transactions` with reason = "chat", "search", or "comment"
+- **No cost** for agent creation.  
+- **1 credit** per usage action.  
+- If `credits_balance` < 1, block the request.  
+- Transaction logs each usage with reason = “chat” / “search” / “comment”.
+
+---
 
 ## 5. Additional Implementation Details
 
-### 5.1 Telegram Scraping vs. API
+### 5.1 Telegram Scraping vs. API & Partial Ingestion
 
-- **Preferred**: Official Telegram API (like `Telethon`) if it can retrieve posts from public channels
-- **Fallback**: Basic scraping with `requests` and `BeautifulSoup` if no direct API
-- A background ingestion task to avoid timeouts on large channels
+- **Preferred**: Official **Telegram API** (e.g., Telethon) for stable scraping.  
+- **Device Info**: Must specify `DEVICE_MODEL`, etc., to avoid logging out your real session.  
+- **Partial Ingestion**: Store an offset or `last_msg_id` in DB for large channels so you only ingest new content each run.
 
-### 5.2 Authentication
+### 5.2 Single Environment for MVP
 
-- **Initial**: Telegram-based. Possibly checking the user's Telegram ID upon login
-- **Future**: Third-party auth providers or Supabase Auth if you want standard email/password or OAuth
+- We only use **one** environment file (`.env`) for local + production references.  
+- In production (Railway), environment variables are set in the hosting config.  
 
-### 5.3 Background Tasks
+### 5.3 Single RAG Function to Unify Chat vs. Search
 
-- **FastAPI's** built-in `BackgroundTasks` or a minimal queue approach for ingestion
-- For high-scale operations, consider Celery or RQ with a separate worker process
+- If you prefer minimal duplication:  
+  - A single function to embed the query, retrieve from Pinecone (with optional `agent_id` filter), build a final prompt, call **OpenAI**.  
+  - Chat calls it with `agent_id`, search calls it with `None`.
 
-### 5.4 Deployment
+### 5.4 Minimal Code, Thorough Comments & Docstrings
 
-- **Backend**: Railway for container-based FastAPI
-  - Store environment variables (Supabase keys, Pinecone keys, DeepSeek R1 keys) in Railway secrets
-- **Frontend**: Vercel for Next.js 13
-  - Project environment variables (API base URL, etc.) in Vercel settings
+- Keep core logic lines minimal, but **docstrings** and inline comments do **not** count as lines.  
+- Each route or function should have a short docstring describing parameters, returns, and possible errors.
 
-## 6. Roadmap & Future Expansions
+### 5.5 Extended Error Handling & Logging
 
-1. **YouTube Transcripts**: Similar ingestion approach, with `langchain.document_loaders` for YouTube or custom scripts
-2. **Advanced Agent Tools**:
-   - Additional "tools" for each agent to browse the web, manipulate external data, etc.
-   - LangChain's agent tool system makes this easier
-3. **Redis or Another Cache**: If in-memory caching is insufficient at scale
-4. **Subscription Tiers**: Instead of pay-per-use, monthly plans with included credits
-5. **Extended Auth**: Beyond Telegram-based, e.g. Auth0, Supabase Auth, or custom JWT
+- If Pinecone or OpenAI fails, raise a short `HTTPException(503, “Service Unavailable”)`.  
+- If insufficient credits, `HTTPException(403, “Not enough credits”)`.  
+- For advanced file-based logging that Cursor can see outside the main console, see a separate doc (e.g., `logging-solution.md`).  
 
-## 7. Security & Edge Cases
+### 5.6 Deployment
 
-1. **Secrets**: Keep **DeepSeek R1** key, Pinecone key, Supabase key in environment variables
-2. **Large Channel**: If Telegram channel is huge, ingestion might fail or partial. Mark `status = "error"` or `status = "partial"`
-3. **Multi-Language**: If DeepSeek R1 handles multi-language, confirm it can embed or interpret non-English text well. If not, fallback to another embeddings approach
-4. **Editing Agent Prompt**: Provide a route or UI for owners to edit the `prompt_template`. If changed, it affects subsequent chat responses
+- **Backend** on **Railway**:
+  - Provide a `Procfile` or rely on minimal `uvicorn` command.  
+  - Store environment variables in Railway’s secrets.
+- **Frontend** on **Vercel**:
+  - Next.js 13 with environment variables in Vercel project settings.
+
+---
+
+**End of instructions.md**.

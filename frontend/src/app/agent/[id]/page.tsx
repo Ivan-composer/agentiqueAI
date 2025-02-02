@@ -5,28 +5,37 @@ import { useParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Bot, User } from 'lucide-react';
+import { ArrowLeft, Send, User2 } from 'lucide-react';
 import Link from 'next/link';
-import { useChatStore, type Message, sendMessage, fetchChatHistory } from '@/lib/chat-service';
+import Image from 'next/image';
+import { useChatStore, type Message, sendMessage } from '@/lib/chat-service';
 import { LoadingDots } from '@/components/ui/loading-dots';
+import { logger } from '@/lib/logger';
+
+interface Agent {
+  id: string;
+  expert_name: string;
+  status: string;
+  created_at: string;
+  profile_photo_url?: string;
+}
 
 /**
  * Agent Chat page for interacting with a specific AI agent.
- * Will integrate with backend /agent/{id}/chat endpoint later.
  */
 export default function AgentChatPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { messages, addMessage, setMessages } = useChatStore();
-  const [agent, setAgent] = useState<{
-    id: string;
-    expert_name: string;
-    status: string;
-    created_at: string;
-  } | null>(null);
+  const { messages: allMessages, addMessage, setMessages } = useChatStore();
+  const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoadingAgent, setIsLoadingAgent] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  // Get current agent's messages
+  const currentMessages = id ? (allMessages[id] || []) : [];
 
   // Fetch agent details
   useEffect(() => {
@@ -37,7 +46,7 @@ export default function AgentChatPage() {
         if (response.ok) {
           setAgent(data);
         } else {
-          setError(data.detail || 'Failed to load agent details');
+          setError(data.detail || 'Failed to load agent');
         }
       } catch (error) {
         setError('Failed to load agent details');
@@ -47,52 +56,74 @@ export default function AgentChatPage() {
       }
     };
 
-    fetchAgentDetails();
+    if (id) {
+      fetchAgentDetails();
+    }
   }, [id]);
 
-  // Load chat history
+  // Load chat history on mount
   useEffect(() => {
-    const loadHistory = async () => {
-      const history = await fetchChatHistory(id as string);
-      setMessages(id as string, history);
+    const loadChatHistory = async () => {
+      const userId = localStorage.getItem('userId');
+      if (!userId || !id) return;
+
+      try {
+        const response = await fetch(`/api/agent/${id}/chat_history?user_id=${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to load chat history');
+        }
+        const data = await response.json();
+        setMessages(id, data.messages || []);
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
     };
-    loadHistory();
+
+    loadChatHistory();
   }, [id, setMessages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim() || isLoading) return;
 
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      setError('Please log in to send messages');
+      return;
+    }
+
     // Add user message immediately
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: inputMessage.trim(),
-      timestamp: new Date()
+      created_at: new Date().toISOString()
     };
-    addMessage(id as string, userMessage);
+    addMessage(id, userMessage);
     setInputMessage('');
     
     // Send message and get response
     setIsLoading(true);
     try {
-      const response = await sendMessage(id as string, userMessage.content);
+      const response = await sendMessage(id, inputMessage.trim(), userId);
       
+      // Add agent response
       const agentMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'agent',
         content: response,
-        timestamp: new Date()
+        created_at: new Date().toISOString()
       };
-      addMessage(id as string, agentMessage);
+      addMessage(id, agentMessage);
     } catch (error) {
-      console.error('Error sending message:', error);
+      logger.error('Error sending message:', error);
+      setError(error instanceof Error ? error.message : 'Failed to send message');
     } finally {
       setIsLoading(false);
     }
   };
-
-  const currentMessages = messages[id as string] || [];
 
   if (isLoadingAgent) {
     return (
@@ -126,15 +157,31 @@ export default function AgentChatPage() {
       <div className="flex-none">
         <Card className="border-0 shadow-none">
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <Link href="/explore">
                 <Button variant="ghost" size="icon" className="shrink-0">
                   <ArrowLeft className="w-5 h-5" />
                 </Button>
               </Link>
+              {agent.profile_photo_url ? (
+                <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
+                  <Image
+                    src={agent.profile_photo_url}
+                    alt={agent.expert_name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center shrink-0">
+                  <User2 className="w-6 h-6 text-muted-foreground" />
+                </div>
+              )}
               <div className="min-w-0">
                 <CardTitle className="truncate">{agent.expert_name}</CardTitle>
-                <CardDescription className="truncate">Created {new Date(agent.created_at).toLocaleDateString()}</CardDescription>
+                <CardDescription className="truncate">
+                  Created {new Date(agent.created_at).toLocaleDateString()}
+                </CardDescription>
               </div>
             </div>
             <div className="text-sm text-muted-foreground mt-2">
@@ -144,67 +191,54 @@ export default function AgentChatPage() {
         </Card>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto py-4 space-y-4 px-1 md:px-2">
-        {currentMessages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex gap-3 ${
-              msg.role === 'user' ? 'justify-end' : 'justify-start'
-            }`}
-          >
-            {msg.role === 'agent' && (
-              <Bot className="w-6 h-6 text-primary flex-none" />
-            )}
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {isLoadingHistory ? (
+          <div className="flex justify-center">
+            <LoadingDots />
+          </div>
+        ) : currentMessages.length > 0 ? (
+          currentMessages.map((message: Message) => (
             <div
-              className={`rounded-lg px-4 py-2 max-w-[85%] break-words ${
-                msg.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+              key={message.id}
+              className={`flex ${
+                message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-              <p className="text-xs opacity-70 mt-1">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </p>
+              <div
+                className={`max-w-[80%] rounded-lg p-4 ${
+                  message.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted'
+                }`}
+              >
+                <p className="whitespace-pre-wrap">{message.content}</p>
+                <div className="text-xs opacity-70 mt-1">
+                  {new Date(message.created_at).toLocaleTimeString()}
+                </div>
+              </div>
             </div>
-            {msg.role === 'user' && (
-              <User className="w-6 h-6 text-primary flex-none" />
-            )}
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex gap-3">
-            <Bot className="w-6 h-6 text-primary flex-none" />
-            <div className="bg-muted rounded-lg px-4 py-3">
-              <LoadingDots className="text-primary" />
-            </div>
+          ))
+        ) : (
+          <div className="text-center text-muted-foreground">
+            No messages yet. Start a conversation!
           </div>
         )}
       </div>
 
-      {/* Input */}
-      <div className="flex-none pt-4">
-        <Card className="border-0 shadow-none">
-          <CardContent>
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Type your message..."
-                disabled={isLoading}
-                className="flex-1"
-              />
-              <Button 
-                type="submit" 
-                disabled={isLoading || !inputMessage.trim()}
-                className="shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+      {/* Message Input */}
+      <div className="flex-none p-4">
+        <form onSubmit={handleSendMessage} className="flex gap-2">
+          <Input
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Type your message..."
+            disabled={isLoading}
+          />
+          <Button type="submit" disabled={isLoading || !inputMessage.trim()}>
+            {isLoading ? <LoadingDots /> : <Send className="w-4 h-4" />}
+          </Button>
+        </form>
       </div>
     </div>
   );

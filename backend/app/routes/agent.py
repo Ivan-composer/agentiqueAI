@@ -1,11 +1,11 @@
 """
 Agent-related routes for managing AI agents and their content.
 """
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Form
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Form, File, UploadFile
 from typing import Dict, Any, Optional
 from datetime import datetime
 from app.services.telegram_service import TelegramService
-from app.services.db_service import create_agent, get_agent_by_id, list_agents, delete_agent, save_chat_message
+from app.services.db_service import create_agent, get_agent_by_id, list_agents, delete_agent, save_chat_message, get_chat_history
 from app.services.openai_service import generate_embedding
 from app.services.pinecone_service import upsert_vectors
 from app.utils.logger import logger
@@ -44,6 +44,11 @@ async def create_agent_from_channel(
     channel_link: str = Form(...),
     prompt_template: str = Form(...),
     owner_id: str = Form(...),
+    profile_photo: Optional[UploadFile] = File(None),
+    channel_title: Optional[str] = Form(None),
+    channel_username: Optional[str] = Form(None),
+    channel_description: Optional[str] = Form(None),
+    channel_participants: Optional[int] = Form(None),
     limit: Optional[int] = Form(None),
     min_id: Optional[int] = Form(None),
     offset_date: Optional[datetime] = Form(None)
@@ -55,6 +60,11 @@ async def create_agent_from_channel(
         channel_link: The Telegram channel link or username
         prompt_template: Template for agent's responses
         owner_id: ID of the user creating this agent
+        profile_photo: Optional profile photo file
+        channel_title: Optional channel title
+        channel_username: Optional channel username
+        channel_description: Optional channel description
+        channel_participants: Optional number of channel participants
         limit: Optional limit on number of messages to ingest
         min_id: Optional minimum message ID to start from
         offset_date: Optional date to start ingestion from
@@ -63,12 +73,30 @@ async def create_agent_from_channel(
         # Initialize Telegram service
         async with TelegramService() as telegram:
             # Get channel info first
-            channel_info = await telegram.get_channel_info(channel_link)
-            channel_title = channel_info["title"]
+            logger.info("Fetching channel info for: %s", channel_link)
             
-            # Create agent in database using channel title as expert name
-            logger.info("Creating agent for channel: %s with title: %s", channel_link, channel_title)
-            agent = await create_agent(owner_id, channel_title, prompt_template)
+            # Prepare channel info
+            channel_info = {
+                "title": channel_title,
+                "username": channel_username,
+                "description": channel_description,
+                "participants_count": channel_participants
+            }
+            
+            # Handle profile photo if provided
+            if profile_photo:
+                photo_data = await profile_photo.read()
+                channel_info["profile_photo"] = photo_data
+                logger.info("Profile photo received, size: %d bytes", len(photo_data))
+            
+            # Create agent in database with channel info
+            logger.info("Creating agent for channel: %s with title: %s", channel_link, channel_info["title"])
+            agent = await create_agent(
+                owner_id=owner_id,
+                expert_name=channel_info["title"] or "Unnamed Agent",
+                prompt_template=prompt_template,
+                channel_info=channel_info
+            )
             agent_id = agent["id"]
             
             # Fetch messages from channel
@@ -84,7 +112,8 @@ async def create_agent_from_channel(
                 return {
                     "agent_id": agent_id,
                     "message_count": 0,
-                    "status": "created_without_messages"
+                    "status": "created_without_messages",
+                    "agent": agent  # Include full agent info in response
                 }
             
             # Process messages in batches
@@ -134,7 +163,8 @@ async def create_agent_from_channel(
                 "agent_id": agent_id,
                 "message_count": len(messages),
                 "vector_count": total_vectors,
-                "status": "success"
+                "status": "success",
+                "agent": agent  # Include full agent info in response
             }
             
     except Exception as e:
@@ -176,21 +206,28 @@ async def chat_with_agent(
         The agent's response
     """
     try:
+        logger.info("Chat request - agent_id: %s, user_id: %s", agent_id, user_id)
+        logger.debug("Message content: %s", message)
+        
         # Get agent details
         agent = await get_agent_by_id(agent_id)
         if not agent:
+            logger.error("Agent not found: %s", agent_id)
             raise HTTPException(status_code=404, detail="Agent not found")
+        logger.debug("Found agent: %s", agent)
             
         try:
             # Save user message
-            await save_chat_message(
+            logger.info("Saving user message...")
+            user_message = await save_chat_message(
                 agent_id=agent_id,
                 user_id=user_id,
                 role="user",
                 content=message
             )
+            logger.debug("Saved user message: %s", user_message)
         except Exception as e:
-            logger.error("Failed to save user message: %s", str(e))
+            logger.error("Failed to save user message: %s", str(e), exc_info=True)
             raise HTTPException(
                 status_code=400,
                 detail=f"Failed to save message: {str(e)}"
@@ -198,13 +235,15 @@ async def chat_with_agent(
         
         try:
             # Get response using RAG
+            logger.info("Generating agent response...")
             response = await rag_retrieve_and_summarize(
                 query=message,
                 agent_id=agent_id,
                 mode="chat"
             )
+            logger.debug("Generated response: %s", response)
         except Exception as e:
-            logger.error("Failed to generate response: %s", str(e))
+            logger.error("Failed to generate response: %s", str(e), exc_info=True)
             raise HTTPException(
                 status_code=500,
                 detail="Failed to generate response"
@@ -212,26 +251,105 @@ async def chat_with_agent(
         
         try:
             # Save agent response
-            await save_chat_message(
+            logger.info("Saving agent response...")
+            agent_message = await save_chat_message(
                 agent_id=agent_id,
                 user_id=user_id,
                 role="agent",
                 content=response
             )
+            logger.debug("Saved agent message: %s", agent_message)
         except Exception as e:
-            logger.error("Failed to save agent response: %s", str(e))
+            logger.error("Failed to save agent response: %s", str(e), exc_info=True)
             # Don't fail the request if saving the response fails
             # The user still gets their answer
             
         return {
             "response": response,
-            "status": "success"
+            "status": "success",
+            "user_message": user_message,
+            "agent_message": agent_message
         }
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Failed to process chat message: %s", str(e))
+        logger.error("Failed to process chat message: %s", str(e), exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="An unexpected error occurred"
+        )
+
+@router.get("/{agent_id}/chat_history")
+async def get_agent_chat_history(
+    agent_id: str,
+    user_id: str,
+    limit: int = 50,
+    before_timestamp: Optional[datetime] = None
+) -> Dict[str, Any]:
+    """
+    Get chat history between a user and an agent.
+    
+    Args:
+        agent_id: The ID of the agent
+        user_id: The ID of the user
+        limit: Maximum number of messages to return
+        before_timestamp: Only return messages before this timestamp
+        
+    Returns:
+        Dictionary containing chat messages and metadata
+    """
+    try:
+        logger.info(
+            "Chat history request - agent_id: %s, user_id: %s, limit: %d", 
+            agent_id, user_id, limit
+        )
+        if before_timestamp:
+            logger.debug("Before timestamp: %s", before_timestamp)
+            
+        # Get agent details
+        agent = await get_agent_by_id(agent_id)
+        if not agent:
+            logger.error("Agent not found: %s", agent_id)
+            raise HTTPException(status_code=404, detail="Agent not found")
+        logger.debug("Found agent: %s", agent)
+            
+        try:
+            # Get chat history
+            logger.info("Retrieving chat history...")
+            messages = await get_chat_history(
+                agent_id=agent_id,
+                user_id=user_id,
+                limit=limit,
+                before_timestamp=before_timestamp
+            )
+            logger.debug("Retrieved %d messages", len(messages))
+            
+            return {
+                "messages": messages,
+                "status": "success",
+                "agent": agent
+            }
+            
+        except Exception as e:
+            logger.error(
+                "Failed to retrieve chat history: %s", 
+                str(e), 
+                exc_info=True
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to retrieve chat history"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "Failed to process chat history request: %s",
+            str(e),
+            exc_info=True
+        )
         raise HTTPException(
             status_code=500,
             detail="An unexpected error occurred"

@@ -82,4 +82,16 @@ class Transaction(TransactionBase):
     created_at: datetime
 
     class Config:
+        from_attributes = True
+
+class ChannelInfo(BaseModel):
+    """Model for Telegram channel information."""
+    id: int
+    title: str
+    username: Optional[str] = None
+    profile_photo: Optional[str] = None  # Base64 encoded photo
+    participants_count: Optional[int] = None
+    description: Optional[str] = None
+
+    class Config:
         from_attributes = True 

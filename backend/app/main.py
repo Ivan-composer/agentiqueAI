@@ -1,13 +1,35 @@
 """
 Main FastAPI application module.
 """
+import os
+from dotenv import load_dotenv
+
+# Load environment variables before importing services
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.utils.logger import logger
 from app.services.openai_service import client as openai_client
 from app.services.pinecone_service import pc as pinecone_client
 from app.services.db_service import supabase
+from app.routes import agent, auth, telegram
 
 app = FastAPI(title="Agentique API")
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+# Include routers
+app.include_router(agent.router, prefix="/agent", tags=["agent"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(telegram.router, prefix="/telegram", tags=["telegram"])
 
 @app.get("/health")
 async def health_check():
@@ -61,7 +83,4 @@ async def health_check():
             detail=status
         )
     
-    return status
-
-# Import and include routers
-# TODO: Add your routers here 
+    return status 
