@@ -5,13 +5,38 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import Dict, Any, Optional
 from datetime import datetime
 from app.services.telegram_service import TelegramService
-from app.services.db_service import create_agent, get_agent_by_id
+from app.services.db_service import create_agent, get_agent_by_id, list_agents
 from app.services.openai_service import generate_embedding
 from app.services.pinecone_service import upsert_vectors
 from app.utils.logger import logger
 from uuid import uuid4
 
 router = APIRouter()
+
+@router.get("/list")
+async def list_agents_route():
+    """
+    List all available agents.
+    """
+    try:
+        agents = await list_agents()
+        return {
+            "agents": agents,
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error("Failed to list agents: %s", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{agent_id}")
+async def get_agent(agent_id: str) -> Dict[str, Any]:
+    """
+    Retrieve agent information by ID.
+    """
+    agent = await get_agent_by_id(agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    return agent
 
 @router.post("/create")
 async def create_agent_from_channel(
@@ -110,14 +135,4 @@ async def create_agent_from_channel(
             
     except Exception as e:
         logger.error("Failed to create agent from channel %s: %s", channel_link, str(e))
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/{agent_id}")
-async def get_agent(agent_id: str) -> Dict[str, Any]:
-    """
-    Retrieve agent information by ID.
-    """
-    agent = await get_agent_by_id(agent_id)
-    if not agent:
-        raise HTTPException(status_code=404, detail="Agent not found")
-    return agent 
+        raise HTTPException(status_code=500, detail=str(e)) 
